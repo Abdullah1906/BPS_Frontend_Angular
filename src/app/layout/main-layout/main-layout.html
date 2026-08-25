@@ -1,0 +1,80 @@
+<div class="d-flex" style="min-height: 100vh;">
+
+  <!-- ================================= -->
+  <!-- SIDEBAR -->
+  <!-- ================================= -->
+
+  <aside class="d-flex flex-column bg-dark text-white flex-shrink-0" style="width: 240px;">
+
+    <!-- Logo -->
+    <div class="px-4 py-4 border-bottom border-secondary border-opacity-25">
+      <div class="fw-bold fs-5">BPS</div>
+      <div class="text-white-50 small">Bus POS System</div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="flex-grow-1 px-3 py-3 d-flex flex-column gap-1">
+
+      <a
+        routerLink="/dashboard"
+        routerLinkActive="active bg-primary text-white"
+        [routerLinkActiveOptions]="{ exact: true }"
+        class="nav-link text-white-50 d-flex align-items-center gap-2 px-3 py-2 rounded"
+      >
+        <span class="fs-6">▣</span>
+        <span>Dashboard</span>
+      </a>
+
+      <a
+        routerLink="/places"
+        routerLinkActive="active bg-primary text-white"
+        class="nav-link text-white-50 d-flex align-items-center gap-2 px-3 py-2 rounded"
+      >
+        <span class="fs-6">◫</span>
+        <span>Places</span>
+      </a>
+
+    <a  
+        routerLink="/trips"
+        routerLinkActive="active bg-primary text-white"
+        class="nav-link text-white-50 d-flex align-items-center gap-2 px-3 py-2 rounded"
+    >
+        <span class="fs-6">⇄</span>
+        <span>Trips</span>
+    </a>
+
+
+    <a
+        routerLink="/reports"
+        routerLinkActive="active bg-primary text-white"
+        class="nav-link text-white-50 d-flex align-items-center gap-2 px-3 py-2 rounded"
+    >
+        <span class="fs-6">▤</span>
+        <span>Reports</span>
+    </a>
+
+    </nav>
+
+    <!-- Bottom -->
+    <div class="px-3 py-3 border-top border-secondary border-opacity-25">
+      <button
+        type="button"
+        class="btn btn-outline-light w-100 d-flex align-items-center justify-content-center gap-2"
+        (click)="logout()"
+      >
+        <span class="fs-6">⇥</span>
+        <span>Logout</span>
+      </button>
+    </div>
+
+  </aside>
+
+  <!-- ================================= -->
+  <!-- MAIN CONTENT -->
+  <!-- ================================= -->
+
+  <main class="flex-grow-1 bg-light overflow-auto">
+    <router-outlet></router-outlet>
+  </main>
+
+</div>

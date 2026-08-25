@@ -1,0 +1,137 @@
+<div class="container-fluid py-4 bg-light min-vh-100">
+
+  <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+    <div>
+      <h1 class="h3 fw-bold mb-0">Trips</h1>
+      <p class="text-muted small mb-0">Manage all trip records</p>
+    </div>
+    <button type="button" class="btn btn-dark d-inline-flex align-items-center gap-2" (click)="create()">
+      <span class="fs-5 lh-1">+</span> Add Trip
+    </button>
+  </div>
+
+  @if (errorMessage) {
+    <div class="alert alert-danger" role="alert">{{ errorMessage }}</div>
+  }
+
+  <div class="card shadow-sm border-0">
+
+    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+      <div>
+        <h2 class="h6 fw-semibold mb-0">All Trips</h2>
+        <span class="text-muted small">{{ trips().length }} record(s)</span>
+      </div>
+      
+      <!-- Items Per Page -->
+      <select 
+        class="form-select form-select-sm w-auto" 
+        (change)="itemsPerPage.set(+$any($event.target).value); currentPage.set(1)">
+        <option value="10">10 / page</option>
+        <option value="25">25 / page</option>
+        <option value="50">50 / page</option>
+        <option value="100">100 / page</option>
+      </select>
+    </div>
+
+    <div class="card-body p-0">
+
+      @if (loading) {
+        <div class="d-flex flex-column align-items-center justify-content-center py-5">
+          <div class="spinner-border text-secondary mb-2" role="status"></div>
+          <p class="text-muted small mb-0">Loading trips...</p>
+        </div>
+      } @else if (trips().length === 0) {
+        <div class="d-flex flex-column align-items-center justify-content-center py-5 text-center">
+          <div class="d-flex align-items-center justify-content-center rounded-3 bg-light text-muted mb-3"
+               style="width:55px; height:55px; font-size:24px;">
+            🚌
+          </div>
+          <h3 class="h6 fw-semibold mb-1">No trips found</h3>
+          <p class="text-muted small mb-3">Get started by adding your first trip</p>
+          <button type="button" class="btn btn-dark btn-sm" (click)="create()">+ Add Trip</button>
+        </div>
+      } @else {
+
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th class="text-muted text-uppercase small" style="width:50px;">#</th>
+                <th class="text-muted text-uppercase small">Place</th>
+                <th class="text-muted text-uppercase small">Date</th>
+                <th class="text-muted text-uppercase small">Price</th>
+                <th class="text-muted text-uppercase small">Tip</th>
+                <th class="text-muted text-uppercase small">Total</th>
+                <th class="text-muted text-uppercase small" style="width:190px;">Actions</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <!-- ✅ Use paginatedTrips() instead of trips() -->
+              @for (trip of paginatedTrips(); track trip.id; let i = $index) {
+                <tr>
+                  <td class="text-muted small">
+                    {{ (currentPage() - 1) * itemsPerPage() + i + 1 }}
+                  </td>
+                  <td class="fw-semibold">{{ trip.placeName }}</td>
+                  <td>{{ trip.tripDate | date: 'dd MMM yyyy' }}</td>
+                  <td>৳{{ trip.price }}</td>
+                  <td>
+                    @if (trip.tipStatus) {
+                      <span class="badge rounded-pill text-success bg-success bg-opacity-10 px-3 py-2">
+                        {{ trip.tipAmount }}
+                      </span>
+                    } @else {
+                      <span class="text-muted small">—</span>
+                    }
+                  </td>
+                  <td class="fw-semibold">৳{{ trip.total }}</td>
+                  <td>
+                    <div class="d-flex gap-2">
+                      <button type="button" class="btn btn-sm btn-outline-primary" (click)="edit(trip.id)">Edit</button>
+                      <button type="button" class="btn btn-sm btn-outline-danger" (click)="delete(trip.id)">Delete</button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <!-- ✅ Pagination Controls -->
+        <div class="d-flex justify-content-between align-items-center p-3 border-top">
+          <div class="text-muted small">
+            Showing <strong>{{ (currentPage() - 1) * itemsPerPage() + 1 }}</strong> to 
+            <strong>{{ currentPage() * itemsPerPage() < trips().length ? currentPage() * itemsPerPage() : trips().length }}</strong> 
+            of <strong>{{ trips().length }}</strong> entries
+          </div>
+
+          <nav aria-label="Page navigation">
+            <ul class="pagination pagination-sm mb-0">
+              <!-- Previous -->
+              <li class="page-item" [class.disabled]="currentPage() === 1">
+                <button class="page-link" (click)="prevPage()" [disabled]="currentPage() === 1">← Prev</button>
+              </li>
+
+              <!-- Page Numbers -->
+              @for (page of [].constructor(totalPages()); track $index) {
+                <li class="page-item" [class.active]="currentPage() === ($index + 1)">
+                  <button class="page-link" (click)="goToPage($index + 1)">{{ $index + 1 }}</button>
+                </li>
+              }
+
+              <!-- Next -->
+              <li class="page-item" [class.disabled]="currentPage() === totalPages()">
+                <button class="page-link" (click)="nextPage()" [disabled]="currentPage() === totalPages()">Next →</button>
+              </li>
+            </ul>
+          </nav>
+        </div>
+
+      }
+
+    </div>
+
+  </div>
+
+</div>

@@ -1,0 +1,118 @@
+<div class="container-fluid py-4 bg-light min-vh-100">
+
+  <div class="mb-4">
+    <button type="button" class="btn btn-link text-muted text-decoration-none p-0 small" (click)="cancel()">
+      &larr; Back to Places
+    </button>
+    <h1 class="h3 fw-bold mb-0 mt-2">{{ isEditMode() ? 'Edit Place' : 'Add Place' }}</h1>
+    <p class="text-muted small mb-0">
+      {{ isEditMode() ? 'Update the details of this place' : 'Create a new place entry' }}
+    </p>
+  </div>
+
+  <div class="card shadow-sm border-0" style="max-width: 720px;">
+
+    <div class="card-header bg-white d-flex align-items-center gap-3 py-3">
+      <div class="d-flex align-items-center justify-content-center rounded-3 bg-primary bg-opacity-10 text-primary"
+           style="width:42px; height:42px; font-size:20px;">
+        📍
+      </div>
+      <div>
+        <h2 class="h6 fw-semibold mb-0">Place Details</h2>
+        <p class="text-muted small mb-0">Fill in the information below</p>
+      </div>
+    </div>
+
+    <div class="card-body p-4">
+
+      <form [formGroup]="placeForm" (ngSubmit)="submit()">
+
+        <div class="mb-3">
+          <label for="placeName" class="form-label fw-semibold small">
+            Place Name <span class="text-danger">*</span>
+          </label>
+          <input
+            id="placeName"
+            type="text"
+            class="form-control"
+            formControlName="placeName"
+            placeholder="e.g. Cox's Bazar"
+          />
+          @if (placeForm.get('placeName')?.invalid && placeForm.get('placeName')?.touched) {
+            <div class="form-text text-danger">Place name is required.</div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label for="pricePerTrip" class="form-label fw-semibold small">
+            Price per Trip <span class="text-danger">*</span>
+          </label>
+          <div class="input-group">
+            <span class="input-group-text">৳</span>
+            <input
+              id="pricePerTrip"
+              type="number"
+              class="form-control"
+              formControlName="pricePerTrip"
+              placeholder="0.00"
+            />
+          </div>
+          @if (placeForm.get('pricePerTrip')?.invalid && placeForm.get('pricePerTrip')?.touched) {
+            <div class="form-text text-danger">Enter a valid price.</div>
+          }
+        </div>
+
+        @if (isEditMode()) {
+          <div class="d-flex align-items-center justify-content-between border rounded-3 p-3 mb-3 bg-light">
+            <div>
+              <div class="fw-semibold small">Active Status</div>
+              <p class="text-muted mb-0" style="font-size: 11px;">Inactive places won't be shown to users</p>
+            </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" role="switch" formControlName="isActive" style="width: 2.5em; height: 1.4em;" />
+            </div>
+          </div>
+        }
+
+        @if (errorMessage) {
+          <div class="alert alert-danger py-2 small" role="alert">
+            {{ errorMessage }}
+          </div>
+        }
+
+        @if (successMessage) {
+          <div class="alert alert-success py-2 small" role="alert">
+            {{ successMessage }}
+          </div>
+        }
+
+        <hr class="my-4" />
+
+        <div class="d-flex align-items-center justify-content-between">
+
+          <button type="button" class="btn btn-link text-muted text-decoration-none" (click)="clear()">
+            Clear
+          </button>
+
+          <div class="d-flex gap-2">
+            <button type="button" class="btn btn-outline-secondary" (click)="cancel()">
+              Cancel
+            </button>
+
+            <button type="submit" class="btn btn-dark" [disabled]="loading">
+              @if (loading) {
+                <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+              }
+              {{ isEditMode() ? 'Update' : 'Save' }}
+            </button>
+          </div>
+
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+
+</div>

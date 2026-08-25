@@ -1,0 +1,285 @@
+
+/* Print styles */
+@media print {
+  body {
+    background: white !important;
+  }
+
+  .container-fluid {
+    padding: 0 !important;
+  }
+
+  .card {
+    border: 1px solid #dee2e6 !important;
+    box-shadow: none !important;
+  }
+
+  /* Hide elements that shouldn't print */
+  .d-print-none {
+    display: none !important;
+  }
+
+  /* Show print-only elements */
+  .d-print-block {
+    display: block !important;
+  }
+
+  .table {
+    font-size: 12px;
+  }
+
+  .table thead {
+    background-color: #f8f9fa !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .table-dark {
+    background-color: #212529 !important;
+    color: white !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .table-secondary {
+    background-color: #e9ecef !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+
+  /* English screen/report hide */
+  .screen-report,
+  .d-print-none {
+    display: none !important;
+  }
+
+  /* Bangla report show */
+  .bangla-report {
+    display: block !important;
+  }
+}
+
+.bangla-report {
+  display: none;
+}
+
+.bangla-report {
+  display: none;
+
+  font-family: "Noto Sans Bengali", sans-serif;
+
+  background: white;
+
+  color: #212529;
+
+  padding: 20px;
+
+  width: 100%;
+  font-size: 22px;
+}
+
+.bangla-report-header {
+  text-align: center;
+
+  margin-bottom: 25px;
+
+  border-bottom: 2px solid #212529;
+
+  padding-bottom: 15px;
+}
+
+.bangla-report-header h2 {
+  font-weight: 700;
+
+  margin-bottom: 5px;
+}
+
+.bangla-report-header p {
+  margin-bottom: 3px;
+}
+
+
+.bangla-filter-info {
+
+  display: flex;
+
+  gap: 25px;
+
+  margin-bottom: 20px;
+
+  font-size: 18px;
+}
+
+
+/* SUMMARY */
+
+.bangla-summary {
+
+  display: flex;
+
+  gap: 15px;
+
+  margin-bottom: 25px;
+}
+
+.bangla-summary > div {
+
+  flex: 1;
+
+  border: 1px solid #dee2e6;
+
+  padding: 12px;
+
+  border-radius: 6px;
+}
+
+.bangla-summary span {
+
+  display: block;
+
+  color: #6c757d;
+
+  font-size: 18px;
+}
+
+.bangla-summary strong {
+
+  display: block;
+
+  font-size: 25px;
+
+  margin-top: 5px;
+}
+
+
+/* TABLE */
+
+.bangla-table {
+
+  width: 100%;
+
+  border-collapse: collapse;
+
+  margin-bottom: 25px;
+
+  font-family: "Noto Sans Bengali", sans-serif;
+
+  font-size: 12px;
+}
+
+.bangla-table th,
+.bangla-table td {
+
+  border: 1px solid #dee2e6;
+
+  padding: 8px;
+
+  vertical-align: middle;
+}
+
+.bangla-table th {
+
+  background: #212529;
+
+  color: white;
+
+  font-weight: 700;
+}
+
+.bangla-table tfoot td {
+
+  font-weight: 700;
+
+  background: #f1f3f5;
+}
+
+
+/* PLACE SUMMARY */
+
+.bangla-place-summary {
+
+  margin-top: 30px;
+}
+
+.bangla-place-summary h3 {
+
+  font-size: 16px;
+
+  font-weight: 700;
+
+  border-bottom: 2px solid #212529;
+
+  padding-bottom: 8px;
+
+  margin-bottom: 15px;
+}
+
+.bangla-table .grand-total td {
+
+  background: #e9ecef;
+
+  font-weight: 700;
+}
+
+
+/* ========================= */
+/* PRINT */
+/* ========================= */
+
+@media print {
+
+  body {
+
+    background: white !important;
+  }
+
+  .screen-report,
+  .d-print-none {
+
+    display: none !important;
+  }
+
+  .bangla-report {
+
+    display: block !important;
+
+    width: 100%;
+
+    padding: 0;
+
+    font-family:
+      "Noto Sans Bengali",
+      sans-serif !important;
+  }
+
+  .bangla-table {
+
+    font-size: 11px;
+
+    page-break-inside: auto;
+  }
+
+  .bangla-table tr {
+
+    page-break-inside: avoid;
+
+    page-break-after: auto;
+  }
+
+  .bangla-place-summary {
+
+    page-break-inside: avoid;
+  }
+
+  @page {
+
+    size: A4;
+
+    margin: 10mm;
+  }
+}
+
+.bangla-font-size{
+    font-size: 20px;
+}

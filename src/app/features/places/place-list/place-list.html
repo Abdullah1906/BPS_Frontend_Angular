@@ -1,0 +1,121 @@
+<div class="container-fluid py-4 bg-light min-vh-100">
+
+  <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+    <div>
+      <h1 class="h3 fw-bold mb-0">Places</h1>
+      <p class="text-muted small mb-0">Manage all places and their trip pricing</p>
+    </div>
+    <button type="button" class="btn btn-dark d-inline-flex align-items-center gap-2" (click)="create()">
+      <span class="fs-5 lh-1">+</span> Add Place
+    </button>
+  </div>
+
+  @if (errorMessage) {
+    <div class="alert alert-danger" role="alert">
+      {{ errorMessage }}
+    </div>
+  }
+
+  <div class="card shadow-sm border-0">
+
+    <div class="card-header bg-white py-3">
+      <h2 class="h6 fw-semibold mb-0">All Places</h2>
+      <span class="text-muted small">{{ places().length }} record(s)</span>
+    </div>
+
+    <div class="card-body p-0">
+
+      @if (loading) {
+
+        <div class="d-flex flex-column align-items-center justify-content-center py-5">
+          <div class="spinner-border text-secondary mb-2" role="status"></div>
+          <p class="text-muted small mb-0">Loading places...</p>
+        </div>
+
+      } @else if (places().length === 0) {
+
+        <div class="d-flex flex-column align-items-center justify-content-center py-5 text-center">
+          <div class="d-flex align-items-center justify-content-center rounded-3 bg-light text-muted mb-3"
+               style="width:55px; height:55px; font-size:24px;">
+            📭
+          </div>
+          <h3 class="h6 fw-semibold mb-1">No places found</h3>
+          <p class="text-muted small mb-3">Get started by adding your first place</p>
+          <button type="button" class="btn btn-dark btn-sm" (click)="create()">+ Add Place</button>
+        </div>
+
+      } @else {
+
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th class="text-muted text-uppercase small" style="width:50px;">#</th>
+                <th class="text-muted text-uppercase small">Name</th>
+                <th class="text-muted text-uppercase small">Price / Trip</th>
+                <th class="text-muted text-uppercase small">Status</th>
+                <th class="text-muted text-uppercase small" style="width:190px;">Actions</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              @for (place of places(); track place.id; let i = $index) {
+                <tr>
+                  <td class="text-muted small">{{ i + 1 }}</td>
+
+                  <td>
+                    <div class="d-flex align-items-center gap-3">
+                      <div class="d-flex align-items-center justify-content-center rounded-3 bg-primary bg-opacity-10 text-primary fw-bold flex-shrink-0"
+                           style="width:38px; height:38px; font-size:14px;">
+                        {{ place.placeName.charAt(0) }}
+                      </div>
+                      <div>
+                        <div class="fw-semibold">{{ place.placeName }}</div>
+                        <div class="text-muted" style="font-size:11px;">ID: {{ place.id }}</div>
+                      </div>
+                    </div>
+                  </td>
+
+                  <td>
+                    <span class="text-muted small me-1">৳</span>
+                    <span class="fw-semibold">{{ place.pricePerTrip }}</span>
+                  </td>
+
+                  <td>
+                    @if (place.isActive) {
+                      <span class="badge rounded-pill text-success bg-success bg-opacity-10 px-3 py-2">
+                        <span class="d-inline-block rounded-circle bg-success me-1" style="width:6px; height:6px;"></span>
+                        Active
+                      </span>
+                    } @else {
+                      <span class="badge rounded-pill text-danger bg-danger bg-opacity-10 px-3 py-2">
+                        <span class="d-inline-block rounded-circle bg-danger me-1" style="width:6px; height:6px;"></span>
+                        Inactive
+                      </span>
+                    }
+                  </td>
+
+                  <td>
+                    <div class="d-flex gap-2">
+                      <button type="button" class="btn btn-sm btn-outline-primary" (click)="edit(place.id)">
+                        Edit
+                      </button>
+                      <button type="button" class="btn btn-sm btn-outline-danger" (click)="delete(place.id)">
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+      }
+
+    </div>
+
+  </div>
+
+</div>

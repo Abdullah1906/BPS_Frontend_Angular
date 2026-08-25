@@ -1,0 +1,92 @@
+<div class="container-fluid py-4 bg-light min-vh-100">
+
+  <div class="mb-4">
+    <button type="button" class="btn btn-link text-muted text-decoration-none p-0 small" (click)="cancel()">
+      &larr; Back to Trips
+    </button>
+    <h1 class="h3 fw-bold mb-0 mt-2">{{ isEditMode() ? 'Edit Trip' : 'Add Trip' }}</h1>
+    <p class="text-muted small mb-0">
+      {{ isEditMode() ? 'Update the details of this trip' : 'Create a new trip record' }}
+    </p>
+  </div>
+
+  <div class="card shadow-sm border-0" style="max-width: 720px;">
+
+    <div class="card-header bg-white py-3">
+      <h2 class="h6 fw-semibold mb-0">Trip Details</h2>
+    </div>
+
+    <div class="card-body p-4">
+
+      <form [formGroup]="tripForm" (ngSubmit)="submit()">
+
+        <div class="mb-3">
+          <label for="placeId" class="form-label fw-semibold small">
+            Place <span class="text-danger">*</span>
+          </label>
+          <select id="placeId" class="form-select" formControlName="placeId">
+            <option [value]="0" disabled>Select a place</option>
+            @for (place of places(); track place.id) {
+              <option [value]="place.id">{{ place.placeName }} (৳{{ place.pricePerTrip }})</option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="tripDate" class="form-label fw-semibold small">
+            Trip Date <span class="text-danger">*</span>
+          </label>
+          <input id="tripDate" type="date" class="form-control" formControlName="tripDate" />
+        </div>
+
+        <div class="d-flex align-items-center justify-content-between border rounded-3 p-3 mb-3 bg-light">
+          <div>
+            <div class="fw-semibold small">Tip Given</div>
+            <p class="text-muted mb-0" style="font-size: 11px;">Enable if a tip was collected</p>
+          </div>
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" role="switch" formControlName="tipStatus" style="width: 2.5em; height: 1.4em;" />
+          </div>
+        </div>
+
+        @if (tripForm.get('tipStatus')?.value) {
+          <div class="mb-3">
+            <label for="tipAmount" class="form-label fw-semibold small">Tip Amount</label>
+            <div class="input-group">
+              <span class="input-group-text">৳</span>
+              <input id="tipAmount" type="number" class="form-control" formControlName="tipAmount" />
+            </div>
+          </div>
+        }
+
+        @if (errorMessage) {
+          <div class="alert alert-danger py-2 small" role="alert">{{ errorMessage }}</div>
+        }
+
+        @if (successMessage) {
+          <div class="alert alert-success py-2 small" role="alert">{{ successMessage }}</div>
+        }
+
+        <hr class="my-4" />
+
+        <div class="d-flex align-items-center justify-content-between">
+          <button type="button" class="btn btn-link text-muted text-decoration-none" (click)="clear()">Clear</button>
+
+          <div class="d-flex gap-2">
+            <button type="button" class="btn btn-outline-secondary" (click)="cancel()">Cancel</button>
+            <button type="submit" class="btn btn-dark" [disabled]="loading">
+              @if (loading) {
+                <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+              }
+              {{ isEditMode() ? 'Update' : 'Save' }}
+            </button>
+          </div>
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+
+</div>

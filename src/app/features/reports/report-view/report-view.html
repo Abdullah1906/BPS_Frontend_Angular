@@ -1,0 +1,521 @@
+<div class="container-fluid py-4 bg-light min-vh-100">
+
+  <div class="mb-4 d-print-none">
+    <h1 class="h3 fw-bold mb-0">Reports</h1>
+    <p class="text-muted small mb-0">Filter and view trip reports</p>
+  </div>
+ <div class="screen-report">
+
+ <!-- FILTER CARD -->
+  <div class="card shadow-sm border-0 mb-4 d-print-none">
+    <div class="card-body p-4">
+
+      <form [formGroup]="filterForm" (ngSubmit)="search()">
+
+        <div class="row g-3">
+
+          <div class="col-md-3">
+            <label class="form-label small fw-semibold">From Date</label>
+            <input type="date" class="form-control" formControlName="fromDate" />
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label small fw-semibold">To Date</label>
+            <input type="date" class="form-control" formControlName="toDate" />
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label small fw-semibold">Place</label>
+            <select class="form-select" formControlName="placeId">
+              <option [value]="0">All Places</option>
+              @for (place of places(); track place.id) {
+                <option [value]="place.id">{{ place.placeName }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="col-md-3">
+            <label class="form-label small fw-semibold">Period</label>
+            <select class="form-select" formControlName="period">
+                <option value="">All</option>
+                <option value="Day">Day</option>
+                <option value="Week">Week</option>
+                <option value="Month">Month</option>
+                <option value="Year">Year</option>
+            </select>
+          </div>
+
+        </div>
+
+        <div class="d-flex gap-2 mt-3">
+            <button type="submit" class="btn btn-dark" [disabled]="loading">
+                @if (loading) {
+                <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+                }
+                Search
+            </button>
+            <button type="button" class="btn btn-outline-secondary" (click)="clear()">Clear</button>
+
+            <button type="button" class="btn btn-outline-dark ms-auto" (click)="print()" [disabled]="reports().length === 0">
+                🖨️ Print
+            </button>
+            <button type="button" class="btn btn-outline-primary" (click)="downloadPdf()" [disabled]="reports().length === 0">
+                📄 Download PDF
+            </button>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+
+  @if (errorMessage) {
+    <div class="alert alert-danger d-print-none" role="alert">{{ errorMessage }}</div>
+  }
+
+  <!-- SUMMARY CARDS -->
+  @if (searched && !loading && reports().length > 0) {
+    <div class="row g-3 mb-4 d-print-none">
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body">
+            <div class="text-muted small">Total Records</div>
+            <div class="h4 fw-bold mb-0">{{ reports().length }}</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body">
+            <div class="text-muted small">Total Tip</div>
+            <div class="h4 fw-bold mb-0 text-success">{{ totalTip }}</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card border-0 shadow-sm">
+          <div class="card-body">
+            <div class="text-muted small">Total Amount</div>
+            <div class="h4 fw-bold mb-0">৳{{ totalAmount }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- MAIN TABLE -->
+  <div class="card shadow-sm border-0">
+
+    <div class="card-body p-0">
+
+      @if (loading) {
+
+        <div class="d-flex flex-column align-items-center justify-content-center py-5 d-print-none">
+          <div class="spinner-border text-secondary mb-2" role="status"></div>
+          <p class="text-muted small mb-0">Loading report...</p>
+        </div>
+
+      } @else if (!searched) {
+
+        <div class="d-flex flex-column align-items-center justify-content-center py-5 text-center d-print-none">
+          <p class="text-muted small mb-0">Set filters above and click Search to view report</p>
+        </div>
+
+      } @else if (reports().length === 0) {
+
+        <div class="d-flex flex-column align-items-center justify-content-center py-5 text-center d-print-none">
+          <h3 class="h6 fw-semibold mb-1">No records found</h3>
+          <p class="text-muted small mb-0">Try adjusting your filters</p>
+        </div>
+
+      } @else {
+
+        <!-- INDIVIDUAL TRIPS TABLE -->
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th class="text-muted text-uppercase small">Date</th>
+                <th class="text-muted text-uppercase small">Place</th>
+                <th class="text-muted text-uppercase small">Price</th>
+                <th class="text-muted text-uppercase small">Tip</th>
+                <th class="text-muted text-uppercase small">Total</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              @for (r of paginatedReports(); track r.id) {
+                <tr>
+                  <td>{{ r.reportDate | date: 'dd MMM yyyy' }}</td>
+                  <td class="fw-semibold">{{ r.placeName }}</td>
+                  <td>৳{{ r.price }}</td>
+                  <td>
+                    @if (r.tipStatus) {
+                      <span class="text-success">{{ r.tipAmount }}</span>
+                    } @else {
+                      <span class="text-muted">—</span>
+                    }
+                  </td>
+                  <td class="fw-semibold">৳{{ r.total }}</td>
+                </tr>
+              }
+            </tbody>
+
+            <tfoot class="table-group-divider">
+              <tr class="fw-bold">
+                <td colspan="3"></td>
+                <td>Grand Total:</td>
+                <td>৳{{ totalAmount }}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+           <!-- ✅ PAGINATION CONTROLS -->
+      <div class="d-flex justify-content-between align-items-center p-3 border-top d-print-none">
+        <div class="text-muted small">
+          Showing <strong>{{ (currentPage() - 1) * itemsPerPage() + 1 }}</strong> to 
+          <strong>{{ Math.min(currentPage() * itemsPerPage(), screenReports().length) }}</strong> of 
+          <strong>{{ screenReports().length }}</strong> entries
+        </div>
+        
+        <nav aria-label="Page navigation">
+          <ul class="pagination pagination-sm mb-0">
+            <!-- Previous -->
+            <li class="page-item" [class.disabled]="currentPage() === 1">
+              <button class="page-link" (click)="prevPage()" [disabled]="currentPage() === 1">← Prev</button>
+            </li>
+            
+            <!-- Page Numbers -->
+            @for (page of [].constructor(totalPages()); track $index) {
+              <li class="page-item" [class.active]="currentPage() === ($index + 1)">
+                <button class="page-link" (click)="goToPage($index + 1)">{{ $index + 1 }}</button>
+              </li>
+            }
+            
+            <!-- Next -->
+            <li class="page-item" [class.disabled]="currentPage() === totalPages()">
+              <button class="page-link" (click)="nextPage()" [disabled]="currentPage() === totalPages()">Next →</button>
+            </li>
+          </ul>
+        </nav>
+
+        <!-- Items Per Page -->
+        <select class="form-select form-select-sm w-auto" [(ngModel)]="itemsPerPage" (change)="currentPage.set(1)">
+          <option [value]="10">10 / page</option>
+          <option [value]="25">25 / page</option>
+          <option [value]="50">50 / page</option>
+          <option [value]="100">100 / page</option>
+        </select>
+      </div>
+
+        <!-- PRINT/PDF ONLY: SUMMARY BY PLACE -->
+        <div class="d-none d-print-block mt-4 p-3">
+          <h5 class="fw-bold border-bottom pb-2 mb-3">Summary by Place</h5>
+          
+          <table class="table table-bordered">
+            <thead class="table-dark">
+              <tr>
+                <th>Place</th>
+                <th>Total Trips × Price/Trip</th>
+                <th>Tip Total</th>
+                <th>Place Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (g of groupedByPlace(); track g.placeName) {
+                <tr>
+                  <td class="fw-semibold">{{ g.placeName }}</td>
+                  <td>{{ g.count }} × {{ g.pricePerTrip }} = ৳{{ g.tripTotal }}</td>
+                  <td>৳{{ g.tipTotal }}</td>
+                  <td class="fw-bold">৳{{ g.placeTotal }}</td>
+                </tr>
+              }
+              <tr class="table-secondary fw-bold">
+                <td>OVERALL TOTAL</td>
+                <td>{{ reports().length }} trips</td>
+                <td>৳{{ totalTip }}</td>
+                <td>৳{{ totalAmount }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      }
+
+    </div>
+
+  </div>
+
+
+ </div>
+ 
+
+    <!-- ========================================= -->
+    <!-- BANGLA REPORT - PRINT / PDF ONLY -->
+    <!-- ========================================= -->
+
+    <div
+    #banglaReport
+    class="bangla-report"
+    >
+
+    <!-- HEADER -->
+
+    <div class="bangla-report-header">
+
+        <h2>
+        ট্রিপ রিপোর্ট
+        </h2>
+
+        <p>
+        ভ্রমণ সংক্রান্ত বিস্তারিত রিপোর্ট
+        </p>
+
+        <p>
+        রিপোর্টের তারিখ:
+        {{ currentDate | date:'dd MMMM yyyy' }}
+        </p>
+
+    </div>
+
+
+    <!-- FILTER INFORMATION -->
+
+    <div class="bangla-filter-info">
+
+        @if (filterForm.value.fromDate) {
+
+        <span>
+            শুরু:
+            {{ filterForm.value.fromDate }}
+        </span>
+
+        }
+
+        @if (filterForm.value.toDate) {
+
+        <span>
+            শেষ:
+            {{ filterForm.value.toDate }}
+        </span>
+
+        }
+
+        @if (filterForm.value.placeId) {
+
+        <span>
+            স্থান:
+            {{ getSelectedPlaceName() }}
+        </span>
+
+        }
+
+    </div>
+
+
+    <!-- SUMMARY -->
+
+    @if (reports().length > 0) {
+
+        <div class="bangla-summary">
+
+        <div>
+            <span>মোট রেকর্ড</span>
+            <strong>
+            {{ reports().length }}
+            </strong>
+        </div>
+
+        <div>
+            <span>মোট টিপ</span>
+            <strong>
+            {{ totalTip }}
+            </strong>
+        </div>
+
+        <!-- <div>
+            <span>সর্বমোট</span>
+            <strong>
+            ৳{{ totalAmount }}
+            </strong>
+        </div> -->
+
+        </div>
+
+    }
+
+
+    <!-- INDIVIDUAL TRIPS -->
+
+    <table class="bangla-table">
+
+        <thead>
+
+        <tr class="bangla-font-size">
+
+            <th>তারিখ</th>
+
+            <th>স্থান</th>
+
+            <th>মূল্য</th>
+
+            <th>টিপ</th>
+
+            <!-- <th>মোট</th> -->
+
+        </tr>
+
+        </thead>
+
+
+        <tbody>
+
+        @for (r of banglaReports(); track r.id) {
+
+            <tr>
+
+            <td class="bangla-font-size">
+                {{ r.reportDate | date:'dd MMM yyyy' }}
+            </td>
+
+            <td class="bangla-font-size">
+                {{ r.placeName }}
+            </td>
+
+            <td class="bangla-font-size">
+                ৳{{ r.price }}
+            </td>
+
+            <td class="bangla-font-size">
+
+                @if (r.tipStatus) {
+
+                {{ r.tipAmount }}
+
+                } @else {
+
+                —
+
+                }
+
+            </td>
+
+            <!-- <td class="bangla-font-size">
+                ৳{{ r.total }}
+            </td> -->
+
+            </tr>
+
+        }
+
+        </tbody>
+
+
+        <!-- <tfoot>
+
+        <tr>
+
+            <td colspan="3"></td>
+
+            <td>
+            সর্বমোট:
+            </td>
+
+            <td>
+            ৳{{ totalAmount }}
+            </td>
+
+        </tr>
+
+        </tfoot> -->
+
+    </table>
+
+
+    <!-- SUMMARY BY PLACE -->
+
+    <div class="bangla-place-summary">
+
+        <h3>
+        স্থান অনুযায়ী সারসংক্ষেপ
+        </h3>
+
+
+        <table class="bangla-table">
+
+        <thead>
+
+            <tr class="bangla-font-size">
+
+            <th>স্থান</th>
+
+            <th>মূল্য</th>
+
+            <th>মোট টিপ</th>
+
+            <!-- <th>স্থানীয় মোট</th>
+
+            </tr> -->
+
+        </thead>
+
+
+        <tbody>
+
+            @for (g of groupedByPlace(); track g.placeName) {
+
+            <tr>
+
+                <td class="bangla-font-size">
+                {{ g.placeName }}
+                </td>
+
+                <td class="bangla-font-size">
+               
+                ৳{{ g.pricePerTrip }}
+                
+                </td>
+
+                <td class="bangla-font-size">
+                {{ g.tipQuantity }}
+                </td>
+<!-- 
+                <td class="bangla-font-size">
+                ৳{{ g.count * g.pricePerTrip }}
+                </td> -->
+
+            </tr>
+
+            }
+
+
+            <tr class="grand-total">
+
+            <td colspan="2" class="text-end bangla-font-size">
+                সর্বমোট
+            </td>
+
+            <td class="bangla-font-size">
+                {{ totalTip  }} টি ট্রিপ
+            </td>
+           
+
+            <!-- <td class="bangla-font-size">
+                ৳{{ totalAmount }}
+            </td> -->
+
+            </tr>
+
+        </tbody>
+
+        </table>
+
+    </div>
+
+    </div>
+
+
+
+    
+</div>
