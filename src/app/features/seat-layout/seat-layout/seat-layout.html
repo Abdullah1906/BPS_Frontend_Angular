@@ -1,1 +1,420 @@
-<p>seat-layout works!</p>
+<div class="container-fluid py-4 bg-light min-vh-100">
+
+  <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+    <div>
+      <h1 class="h3 fw-bold mb-0">Seat Layout</h1>
+      <p class="text-muted small mb-0">Manage bus seats and seating arrangement</p>
+    </div>
+    <a routerLink="/admin/buses" class="btn btn-outline-secondary btn-sm">
+      &larr; Back to Buses
+    </a>
+  </div>
+
+  @if (successMessage()) {
+    <div class="alert alert-success" role="alert">
+      {{ successMessage() }}
+    </div>
+  }
+
+  @if (errorMessage()) {
+    <div class="alert alert-danger" role="alert">
+      {{ errorMessage() }}
+    </div>
+  }
+
+  <!-- Copy Layout -->
+    <div class="card shadow-sm border-0 mb-4">
+
+    <div class="card-header bg-white d-flex align-items-center gap-3 py-3">
+        <div class="d-flex align-items-center justify-content-center rounded-3 bg-primary bg-opacity-10 text-primary"
+            style="width:42px; height:42px; font-size:18px;">
+        📋
+        </div>
+        <div>
+        <h2 class="h6 fw-semibold mb-0">Reuse Layout</h2>
+        <p class="text-muted small mb-0">Copy seat configuration from another bus</p>
+        </div>
+    </div>
+
+    <div class="card-body p-4">
+
+        <div class="row g-3 align-items-end">
+
+        <div class="col-md-8">
+            <label for="sourceBus" class="form-label fw-semibold small">Copy from</label>
+            <select
+            id="sourceBus"
+            class="form-select"
+            [(ngModel)]="selectedSourceBusId"
+            [ngModelOptions]="{ standalone: true }">
+            <option [ngValue]="null" disabled>Select a bus</option>
+            @for (bus of otherBuses(); track bus.id) {
+                <option [ngValue]="bus.id">{{ bus.busName }} ({{ bus.busNumber }})</option>
+            }
+            </select>
+        </div>
+
+        <div class="col-md-4">
+            <button
+            type="button"
+            class="btn btn-outline-primary w-100"
+            [disabled]="!selectedSourceBusId() || copying()"
+            (click)="copyLayoutFromBus()">
+            @if (copying()) {
+                <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+                Copying...
+            } @else {
+                Copy Layout
+            }
+            </button>
+        </div>
+
+        </div>
+
+        @if (seats().length > 0) {
+        <p class="text-muted small mt-2 mb-0">
+            ⚠️ This bus already has {{ seats().length }} seat(s). Copying will add duplicates unless you delete existing seats first.
+        </p>
+        }
+
+    </div>
+
+    </div>
+
+  <!-- Add / Edit Seat -->
+  <div class="card shadow-sm border-0 mb-4">
+
+    <div class="card-header bg-white d-flex align-items-center gap-3 py-3">
+      <div class="d-flex align-items-center justify-content-center rounded-3 bg-primary bg-opacity-10 text-primary"
+           style="width:42px; height:42px; font-size:18px;">
+        💺
+      </div>
+      <div>
+        <h2 class="h6 fw-semibold mb-0">
+          {{ editingSeatId() ? 'Edit Seat' : 'Add Seat' }}
+        </h2>
+        <p class="text-muted small mb-0">Configure seat position and properties</p>
+      </div>
+    </div>
+
+    <div class="card-body p-4">
+
+      <form [formGroup]="form" (ngSubmit)="saveSeat()">
+
+        <div class="row g-3">
+
+          <div class="col-md-4">
+            <label for="seatNumber" class="form-label fw-semibold small">
+              Seat Number <span class="text-danger">*</span>
+            </label>
+            <input
+              id="seatNumber"
+              type="text"
+              class="form-control"
+              formControlName="seatNumber"
+              placeholder="Example: A1"
+            />
+            @if (form.controls.seatNumber.invalid && form.controls.seatNumber.touched) {
+              <div class="form-text text-danger">Seat number is required.</div>
+            }
+          </div>
+
+          <div class="col-md-4">
+            <label for="rowNumber" class="form-label fw-semibold small">
+              Row Number <span class="text-danger">*</span>
+            </label>
+            <input
+              id="rowNumber"
+              type="number"
+              min="1"
+              class="form-control"
+              formControlName="rowNumber"
+            />
+          </div>
+
+          <div class="col-md-4">
+            <label for="columnNumber" class="form-label fw-semibold small">
+              Column Number <span class="text-danger">*</span>
+            </label>
+            <input
+              id="columnNumber"
+              type="number"
+              min="1"
+              class="form-control"
+              formControlName="columnNumber"
+            />
+          </div>
+
+        </div>
+
+        <div class="d-flex flex-wrap gap-4 mt-3">
+
+          <div class="form-check">
+            <input
+              id="isWindow"
+              type="checkbox"
+              class="form-check-input"
+              formControlName="isWindow"
+            />
+            <label for="isWindow" class="form-check-label small fw-semibold">
+              Window Seat
+            </label>
+          </div>
+
+          @if (editingSeatId()) {
+            <div class="form-check">
+              <input
+                id="isActive"
+                type="checkbox"
+                class="form-check-input"
+                formControlName="isActive"
+              />
+              <label for="isActive" class="form-check-label small fw-semibold">
+                Active Seat
+              </label>
+            </div>
+          }
+
+        </div>
+
+        <hr class="my-4" />
+
+        <div class="d-flex align-items-center justify-content-end gap-2">
+
+          @if (editingSeatId()) {
+            <button type="button" class="btn btn-outline-secondary" (click)="cancelEdit()">
+              Cancel Edit
+            </button>
+          } @else {
+            <button type="button" class="btn btn-link text-muted text-decoration-none" (click)="resetForm()">
+              Clear
+            </button>
+          }
+
+          <button type="submit" class="btn btn-dark" [disabled]="saving()">
+            @if (saving()) {
+              <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+              Saving...
+            } @else {
+              {{ editingSeatId() ? 'Update Seat' : 'Add Seat' }}
+            }
+          </button>
+
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+
+  <!-- Visual Layout -->
+  <div class="card shadow-sm border-0 mb-4">
+
+    <div class="card-header bg-white py-3">
+      <h2 class="h6 fw-semibold mb-0">Bus Layout</h2>
+      <span class="text-muted small">{{ seats().length }} seat(s)</span>
+    </div>
+
+    <div class="card-body">
+
+      @if (loading()) {
+        <div class="d-flex flex-column align-items-center justify-content-center py-5">
+          <div class="spinner-border text-secondary mb-2" role="status"></div>
+          <p class="text-muted small mb-0">Loading seats...</p>
+        </div>
+      }
+
+      @if (!loading() && seats().length > 0) {
+
+        <div class="bus-shell mx-auto">
+
+             <div class="bus-front">
+
+                <div class="engine-block">
+                <span>ENGINE</span>
+                </div>
+
+                <div class="front-row">
+
+                <div class="gate-block">
+                    <span class="gate-icon">🚪</span>
+                    <span class="gate-label">Gate</span>
+                </div>
+
+                <div class="driver-seat">
+                    <span>🚗</span>
+                </div>
+
+                </div>
+
+            </div>
+
+            <div class="seat-map">
+
+                @for (row of seatRows(); track row.rowNumber) {
+
+                <div class="seat-row">
+
+                    <div class="row-label">{{ row.rowNumber }}</div>
+
+                    <div class="seat-cluster" >
+
+                        @for (seat of row.seats; track seat.id; let colIdx = $index) {
+
+                            @if (colIdx === 2 && row.seats.length <= 4) {
+                            <div class="aisle-slot"></div>
+                            }
+
+                            <button
+                            type="button"
+                            class="seat-btn"
+                            [class.inactive]="!seat.isActive"
+                            [class.window]="seat.isWindow"
+                            (click)="editSeat(seat)"
+                            [title]="seat.seatNumber + (seat.isWindow ? ' - Window' : '')">
+
+                            <span class="seat-number">{{ seat.seatNumber }}</span>
+                            @if (seat.isWindow) {
+                                <span class="window-tag">W</span>
+                            }
+
+                            </button>
+
+                        }
+
+                    </div>
+
+                </div>
+
+                }
+
+            </div>
+
+            </div>
+
+        <div class="d-flex flex-wrap gap-4 justify-content-center mt-4 pt-3 border-top">
+
+          <div class="d-flex align-items-center gap-2">
+            <span class="legend-swatch active"></span>
+            <span class="small text-muted">Active</span>
+          </div>
+
+          <div class="d-flex align-items-center gap-2">
+            <span class="legend-swatch window"></span>
+            <span class="small text-muted">Window</span>
+          </div>
+
+          <div class="d-flex align-items-center gap-2">
+            <span class="legend-swatch inactive"></span>
+            <span class="small text-muted">Inactive</span>
+          </div>
+
+        </div>
+
+      }
+
+      @if (!loading() && seats().length === 0) {
+
+        <div class="d-flex flex-column align-items-center justify-content-center py-5 text-center">
+          <div class="d-flex align-items-center justify-content-center rounded-3 bg-light text-muted mb-3"
+               style="width:55px; height:55px; font-size:24px;">
+            💺
+          </div>
+          <h3 class="h6 fw-semibold mb-1">No seats configured</h3>
+          <p class="text-muted small mb-0">Add seats using the form above</p>
+        </div>
+
+      }
+
+    </div>
+
+  </div>
+
+  <!-- Seat Table -->
+  @if (seats().length > 0) {
+
+    <div class="card shadow-sm border-0">
+
+      <div class="card-header bg-white py-3">
+        <h2 class="h6 fw-semibold mb-0">Seat Details</h2>
+        <span class="text-muted small">Complete seat configuration</span>
+      </div>
+
+      <div class="card-body p-0">
+
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th class="text-muted text-uppercase small" style="width:50px;">#</th>
+                <th class="text-muted text-uppercase small">Seat</th>
+                <th class="text-muted text-uppercase small">Row</th>
+                <th class="text-muted text-uppercase small">Column</th>
+                <th class="text-muted text-uppercase small">Window</th>
+                <th class="text-muted text-uppercase small">Status</th>
+                <th class="text-muted text-uppercase small" style="width:230px;">Actions</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              @for (seat of paginatedSeats(); track seat.id; let i = $index) {
+                <tr>
+                  <td class="text-muted small">{{ (currentPage() - 1) * pageSize + i + 1 }}</td>
+                  <td class="fw-semibold">{{ seat.seatNumber }}</td>
+                  <td>{{ seat.rowNumber }}</td>
+                  <td>{{ seat.columnNumber }}</td>
+                  <td>
+                    @if (seat.isWindow) {
+                      <span class="badge rounded-pill text-primary bg-primary bg-opacity-10 px-3 py-2">Yes</span>
+                    } @else {
+                      <span class="badge rounded-pill text-muted bg-light px-3 py-2">No</span>
+                    }
+                  </td>
+                  <td>
+                    @if (seat.isActive) {
+                      <span class="badge rounded-pill text-success bg-success bg-opacity-10 px-3 py-2">
+                        <span class="d-inline-block rounded-circle bg-success me-1" style="width:6px; height:6px;"></span>
+                        Active
+                      </span>
+                    } @else {
+                      <span class="badge rounded-pill text-danger bg-danger bg-opacity-10 px-3 py-2">
+                        <span class="d-inline-block rounded-circle bg-danger me-1" style="width:6px; height:6px;"></span>
+                        Inactive
+                      </span>
+                    }
+                  </td>
+                  <td>
+                    <div class="d-flex gap-2 flex-wrap">
+                      <button type="button" class="btn btn-sm btn-outline-primary" (click)="editSeat(seat)">
+                        Edit
+                      </button>
+                      <button type="button" class="btn btn-sm btn-outline-warning" (click)="toggleStatus(seat)">
+                        {{ seat.isActive ? 'Deactivate' : 'Activate' }}
+                      </button>
+                      <button type="button" class="btn btn-sm btn-outline-danger" (click)="deleteSeat(seat)">
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <app-pagination
+        [totalItems]="seats().length"
+        [pageSize]="pageSize"
+        [currentPage]="currentPage()"
+        (pageChange)="onPageChange($event)">
+      </app-pagination>
+
+
+      </div>
+
+    </div>
+
+  }
+
+</div>

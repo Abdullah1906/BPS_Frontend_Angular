@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { BusListComponent } from './bus-list';
+import { Pagination } from './pagination';
 
-describe('BusListComponent', () => {
-  let component: BusListComponent;
-  let fixture: ComponentFixture<BusListComponent>;
+describe('Pagination', () => {
+  let component: Pagination;
+  let fixture: ComponentFixture<Pagination>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [BusListComponent]
+      imports: [Pagination]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(BusListComponent);
+    fixture = TestBed.createComponent(Pagination);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -1,0 +1,42 @@
+@if (totalPages() > 1) {
+
+  <div class="d-flex align-items-center justify-content-between px-3 py-3 border-top flex-wrap gap-2">
+
+    <span class="text-muted small">
+      Showing {{ pageStart() }}–{{ pageEnd() }} of {{ totalItems() }}
+    </span>
+
+    <div class="d-flex align-items-center gap-1">
+
+      <button
+        type="button"
+        class="btn btn-sm btn-outline-secondary"
+        [disabled]="currentPage() === 1"
+        (click)="goToPage(currentPage() - 1)">
+        &larr; Previous
+      </button>
+
+      @for (page of pageNumbers(); track page) {
+        <button
+          type="button"
+          class="btn btn-sm"
+          [class.btn-dark]="page === currentPage()"
+          [class.btn-outline-secondary]="page !== currentPage()"
+          (click)="goToPage(page)">
+          {{ page }}
+        </button>
+      }
+
+      <button
+        type="button"
+        class="btn btn-sm btn-outline-secondary"
+        [disabled]="currentPage() === totalPages()"
+        (click)="goToPage(currentPage() + 1)">
+        Next &rarr;
+      </button>
+
+    </div>
+
+  </div>
+
+}

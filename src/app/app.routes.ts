@@ -9,6 +9,9 @@ import { authGuard } from './core/guards/auth-guard';
 import { TripList } from './features/trips/trip-list/trip-list';
 import { TripForm } from './features/trips/trip-form/trip-form';
 import { ReportView } from './features/reports/report-view/report-view';
+import { BusListComponent } from './features/buses/bus-list/bus-list';
+import { BusFormComponent } from './features/buses/bus-form/bus-form';
+import { SeatLayout } from './features/seat-layout/seat-layout/seat-layout';
 
 export const routes: Routes = [
 
@@ -62,6 +65,22 @@ export const routes: Routes = [
       {
         path: 'reports',
         component: ReportView
+      },
+      {
+        path: 'admin/buses',
+        component: BusListComponent
+      },
+      {
+        path: 'admin/buses/create',
+        component: BusFormComponent
+      },
+      {
+        path: 'admin/buses/edit/:id',
+        component: BusFormComponent
+      },
+      {
+        path: 'admin/buses/:busId/seats',
+        component: SeatLayout
       }
 
     ]

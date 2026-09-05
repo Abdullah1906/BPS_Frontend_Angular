@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { BusForm } from './bus-form';
+import { BusFormComponent } from './bus-form';
 
-describe('BusForm', () => {
-  let component: BusForm;
-  let fixture: ComponentFixture<BusForm>;
+describe('BusFormComponent', () => {
+  let component: BusFormComponent;
+  let fixture: ComponentFixture<BusFormComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [BusForm]
+      imports: [BusFormComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(BusForm);
+    fixture = TestBed.createComponent(BusFormComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

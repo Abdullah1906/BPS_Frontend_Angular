@@ -1,1 +1,166 @@
-<p>bus-form works!</p>
+<div class="container-fluid py-4 bg-light min-vh-100">
+
+  <div class="mb-4">
+    <button type="button" class="btn btn-link text-muted text-decoration-none p-0 small" (click)="cancel()">
+      &larr; Back to Buses
+    </button>
+    <h1 class="h3 fw-bold mb-0 mt-2">{{ isEditMode() ? 'Edit Bus' : 'Add Bus' }}</h1>
+    <p class="text-muted small mb-0">
+      {{ isEditMode() ? 'Update the details of this bus' : 'Register a new bus in the fleet' }}
+    </p>
+  </div>
+
+  <div class="card shadow-sm border-0" style="max-width: 720px;">
+
+    <div class="card-header bg-white d-flex align-items-center gap-3 py-3">
+      <div class="d-flex align-items-center justify-content-center rounded-3 bg-primary bg-opacity-10 text-primary"
+           style="width:42px; height:42px; font-size:20px;">
+        🚌
+      </div>
+      <div>
+        <h2 class="h6 fw-semibold mb-0">Bus Details</h2>
+        <p class="text-muted small mb-0">Fill in the information below</p>
+      </div>
+    </div>
+
+    <div class="card-body p-4">
+
+      @if (loading()) {
+
+        <div class="d-flex flex-column align-items-center justify-content-center py-5">
+          <div class="spinner-border text-secondary mb-2" role="status"></div>
+          <p class="text-muted small mb-0">Loading bus...</p>
+        </div>
+
+      } @else {
+
+        <form [formGroup]="form" (ngSubmit)="submit()">
+
+          <div class="mb-3">
+            <label for="busName" class="form-label fw-semibold small">
+              Bus Name <span class="text-danger">*</span>
+            </label>
+            <input
+              id="busName"
+              type="text"
+              class="form-control"
+              formControlName="busName"
+              placeholder="e.g. Green Line Express"
+            />
+            @if (busName.invalid && busName.touched) {
+              <div class="form-text text-danger">
+                @if (busName.errors?.['required']) {
+                  Bus name is required.
+                } @else if (busName.errors?.['minlength']) {
+                  Bus name must be at least 2 characters.
+                } @else if (busName.errors?.['maxlength']) {
+                  Bus name cannot exceed 100 characters.
+                }
+              </div>
+            }
+          </div>
+
+          <div class="mb-3">
+            <label for="busNumber" class="form-label fw-semibold small">
+              Bus Number <span class="text-danger">*</span>
+            </label>
+            <input
+              id="busNumber"
+              type="text"
+              class="form-control"
+              formControlName="busNumber"
+              placeholder="e.g. DHK-METRO-GA-1234"
+            />
+            @if (busNumber.invalid && busNumber.touched) {
+              <div class="form-text text-danger">
+                @if (busNumber.errors?.['required']) {
+                  Bus number is required.
+                } @else if (busNumber.errors?.['minlength']) {
+                  Bus number must be at least 2 characters.
+                } @else if (busNumber.errors?.['maxlength']) {
+                  Bus number cannot exceed 50 characters.
+                }
+              </div>
+            }
+          </div>
+
+          <div class="mb-3">
+            <label for="totalSeats" class="form-label fw-semibold small">
+              Total Seats <span class="text-danger">*</span>
+            </label>
+            <input
+              id="totalSeats"
+              type="number"
+              class="form-control"
+              formControlName="totalSeats"
+              placeholder="e.g. 40"
+            />
+            @if (totalSeats.invalid && totalSeats.touched) {
+              <div class="form-text text-danger">
+                @if (totalSeats.errors?.['required']) {
+                  Total seats is required.
+                } @else if (totalSeats.errors?.['min']) {
+                  Total seats must be at least 1.
+                } @else if (totalSeats.errors?.['max']) {
+                  Total seats cannot exceed 200.
+                }
+              </div>
+            }
+          </div>
+
+          @if (isEditMode()) {
+            <div class="d-flex align-items-center justify-content-between border rounded-3 p-3 mb-3 bg-light">
+              <div>
+                <div class="fw-semibold small">Active Status</div>
+                <p class="text-muted mb-0" style="font-size: 11px;">Inactive buses won't be available for trips</p>
+              </div>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" formControlName="isActive" style="width: 2.5em; height: 1.4em;" />
+              </div>
+            </div>
+          }
+
+          @if (errorMessage()) {
+            <div class="alert alert-danger py-2 small" role="alert">
+              {{ errorMessage() }}
+            </div>
+          }
+
+          @if (successMessage()) {
+            <div class="alert alert-success py-2 small" role="alert">
+              {{ successMessage() }}
+            </div>
+          }
+
+          <hr class="my-4" />
+
+          <div class="d-flex align-items-center justify-content-between">
+
+            <button type="button" class="btn btn-link text-muted text-decoration-none" (click)="resetForm()">
+              Clear
+            </button>
+
+            <div class="d-flex gap-2">
+              <button type="button" class="btn btn-outline-secondary" (click)="cancel()">
+                Cancel
+              </button>
+
+              <button type="submit" class="btn btn-dark" [disabled]="saving()">
+                @if (saving()) {
+                  <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+                }
+                {{ isEditMode() ? 'Update' : 'Save' }}
+              </button>
+            </div>
+
+          </div>
+
+        </form>
+
+      }
+
+    </div>
+
+  </div>
+
+</div>
