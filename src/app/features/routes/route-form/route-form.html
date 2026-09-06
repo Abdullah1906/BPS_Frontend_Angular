@@ -1,1 +1,149 @@
-<p>route-form works!</p>
+<div class="container-fluid py-4 bg-light min-vh-100">
+
+  <div class="mb-4">
+    <button type="button" class="btn btn-link text-muted text-decoration-none p-0 small" (click)="onCancel()">
+      &larr; Back to Routes
+    </button>
+    <h1 class="h3 fw-bold mb-0 mt-2">{{ isEditMode() ? 'Edit Route' : 'Add Route' }}</h1>
+    <p class="text-muted small mb-0">
+      {{ isEditMode() ? 'Update the details of this route' : 'Register a new route in the system' }}
+    </p>
+  </div>
+
+  <div class="card shadow-sm border-0" style="max-width: 720px;">
+
+    <div class="card-header bg-white d-flex align-items-center gap-3 py-3">
+      <div class="d-flex align-items-center justify-content-center rounded-3 bg-primary bg-opacity-10 text-primary"
+           style="width:42px; height:42px; font-size:20px;">
+        🗺️
+      </div>
+      <div>
+        <h2 class="h6 fw-semibold mb-0">Route Details</h2>
+        <p class="text-muted small mb-0">Fill in the information below</p>
+      </div>
+    </div>
+
+    <div class="card-body p-4">
+
+      @if (loading()) {
+        <div class="d-flex flex-column align-items-center justify-content-center py-5">
+          <div class="spinner-border text-secondary mb-2" role="status"></div>
+          <p class="text-muted small mb-0">Loading route...</p>
+        </div>
+      } @else {
+
+        <form [formGroup]="form" (ngSubmit)="onSubmit()">
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="fromPlace" class="form-label fw-semibold small">
+                From <span class="text-danger">*</span>
+              </label>
+              <input
+                id="fromPlace"
+                type="text"
+                class="form-control"
+                formControlName="fromPlace"
+                placeholder="e.g. Dhaka"
+                [class.is-invalid]="form.controls.fromPlace.invalid && form.controls.fromPlace.touched"
+              />
+              @if (form.controls.fromPlace.invalid && form.controls.fromPlace.touched) {
+                <div class="form-text text-danger">From place is required.</div>
+              }
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label for="toPlace" class="form-label fw-semibold small">
+                To <span class="text-danger">*</span>
+              </label>
+              <input
+                id="toPlace"
+                type="text"
+                class="form-control"
+                formControlName="toPlace"
+                placeholder="e.g. Chittagong"
+                [class.is-invalid]="form.controls.toPlace.invalid && form.controls.toPlace.touched"
+              />
+              @if (form.controls.toPlace.invalid && form.controls.toPlace.touched) {
+                <div class="form-text text-danger">To place is required.</div>
+              }
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label for="distanceKm" class="form-label fw-semibold small">Distance (km)</label>
+              <input 
+                id="distanceKm" 
+                type="number" 
+                class="form-control" 
+                formControlName="distanceKm" 
+                placeholder="e.g. 250" 
+              />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="estimatedMinutes" class="form-label fw-semibold small">Est. Time (min)</label>
+              <input 
+                id="estimatedMinutes" 
+                type="number" 
+                class="form-control" 
+                formControlName="estimatedMinutes" 
+                placeholder="e.g. 360" 
+              />
+            </div>
+          </div>
+
+          @if (isEditMode()) {
+            <div class="d-flex align-items-center justify-content-between border rounded-3 p-3 mb-3 bg-light">
+              <div>
+                <div class="fw-semibold small">Active Status</div>
+                <p class="text-muted mb-0" style="font-size: 11px;">Inactive routes won't be available for trip schedules</p>
+              </div>
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" formControlName="isActive" style="width: 2.5em; height: 1.4em;" />
+              </div>
+            </div>
+          }
+
+          @if (errorMessage()) {
+            <div class="alert alert-danger py-2 small" role="alert">
+              {{ errorMessage() }}
+            </div>
+          }
+
+          @if (successMessage()) {
+            <div class="alert alert-success py-2 small" role="alert">
+              {{ successMessage() }}
+            </div>
+          }
+
+          <hr class="my-4" />
+
+          <div class="d-flex align-items-center justify-content-between">
+            <button type="button" class="btn btn-link text-muted text-decoration-none" (click)="resetForm()">
+              Clear
+            </button>
+
+            <div class="d-flex gap-2">
+              <button type="button" class="btn btn-outline-secondary" (click)="onCancel()">
+                Cancel
+              </button>
+
+              <button type="submit" class="btn btn-dark" [disabled]="saving()">
+                @if (saving()) {
+                  <span class="spinner-border spinner-border-sm me-1" role="status"></span>
+                }
+                {{ isEditMode() ? 'Update' : 'Save' }}
+              </button>
+            </div>
+          </div>
+
+        </form>
+
+      }
+
+    </div>
+
+  </div>
+
+</div>
