@@ -30,3 +30,11 @@ export interface TripScheduleDto {
   createdAt: string;
   createdBy?: string;
 }
+
+export interface UpdateTripScheduleDto extends CreateTripScheduleDto {
+  isActive: boolean;
+}
+
+export interface ChangeTripStatusDto {
+  isActive: boolean;
+}

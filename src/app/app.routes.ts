@@ -15,6 +15,8 @@ import { SeatLayout } from './features/seat-layout/seat-layout/seat-layout';
 import { RouteList } from './features/routes/route-list/route-list';
 import { RouteForm } from './features/routes/route-form/route-form';
 
+import { TripScheduleList } from './features/trips-schedules/trip-list/trip-list';
+import { TripScheduleForm } from './features/trips-schedules/trip-form/trip-form';
 
 export const routes: Routes = [
 
@@ -96,6 +98,20 @@ export const routes: Routes = [
       {
         path: 'admin/routes/:id/edit',
         component: RouteForm
+      },
+      {
+        path: 'admin/trips/schedules',
+        component: TripScheduleList
+      },
+
+      {
+        path: 'admin/trips/schedules/create',
+        component: TripScheduleForm
+      },
+
+      {
+        path: 'admin/trips/schedules/edit/:id',
+        component: TripScheduleForm
       }
 
     ]
