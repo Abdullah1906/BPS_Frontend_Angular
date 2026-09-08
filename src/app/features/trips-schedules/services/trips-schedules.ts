@@ -22,9 +22,7 @@ export class TripScheduleService {
     `${environment.apiUrl}/v1/admin/trips`;
 
   // POST /api/v1/admin/trips
-  create(
-    request: CreateTripScheduleDto
-  ): Observable<TripScheduleDto> {
+  create(request: CreateTripScheduleDto): Observable<TripScheduleDto> {
 
     return this.http.post<TripScheduleDto>(
       this.apiUrl,

@@ -1,3 +1,8 @@
+import { SeatStatus } from './seat-status.enum';
+import { BookingStatus } from './booking-status.enum';
+import { PaymentStatus } from './payment-status.enum';
+
+
 export interface PassengerDto {
   tripSeatId: number;
   passengerName: string;
@@ -15,7 +20,7 @@ export interface LockedSeatDto {
   tripId: number;
   busSeatId: number;
   seatNumber: string;
-  status: number;
+  status: SeatStatus;
   lockedUntil: string;
 }
 
@@ -50,8 +55,8 @@ export interface ConfirmBookingResponseDto {
 
   totalAmount: number;
 
-  bookingStatus: number;
-  paymentStatus: number;
+  bookingStatus: BookingStatus;
+  paymentStatus: PaymentStatus;
 
   paymentMethod: string;
   transactionId?: string;
@@ -61,3 +66,4 @@ export interface ConfirmBookingResponseDto {
 
   passengers: ConfirmedPassengerDto[];
 }
+

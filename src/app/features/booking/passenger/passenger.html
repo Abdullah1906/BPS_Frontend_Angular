@@ -1,1 +1,45 @@
-<p>passenger works!</p>
+<div class="passenger-page">
+  <h3>👤 Passenger Details</h3>
+
+  <div class="passenger-list">
+    @for (form of forms(); track $index) {
+      <!-- 🔧 Wrap in formGroup so we can use formControlName -->
+      <form [formGroup]="form" class="passenger-card">
+        <div class="seat-badge">Seat {{ form.value.seatNumber }}</div>
+
+        <div class="form-group">
+          <label>Full Name *</label>
+          <!-- 🔧 Use formControlName instead of [formControl] -->
+          <input type="text" formControlName="passengerName" />
+          @if (form.get('passengerName')?.invalid && form.get('passengerName')?.touched) {
+            <small class="error">Name is required</small>
+          }
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Phone *</label>
+            <input type="tel" formControlName="passengerPhone" placeholder="01XXXXXXXXX" />
+            @if (form.get('passengerPhone')?.invalid && form.get('passengerPhone')?.touched) {
+              <small class="error">Valid BD number required</small>
+            }
+          </div>
+
+          <div class="form-group">
+            <label>NID (Optional)</label>
+            <input type="text" formControlName="passengerNID" />
+          </div>
+        </div>
+      </form>
+    }
+  </div>
+
+  <div class="actions">
+    <button type="button" class="btn-secondary" (click)="goBack()">← Back</button>
+    <button type="button" class="btn-primary" (click)="submit()">Continue to Payment →</button>
+  </div>
+
+  @if (errorMessage()) {
+    <p class="error-message">{{ errorMessage() }}</p>
+  }
+</div>

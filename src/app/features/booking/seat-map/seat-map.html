@@ -1,1 +1,63 @@
-<p>seat-map works!</p>
+<div class="seat-map">
+  @if (state.selectedTrip(); as trip) {
+    <div class="trip-header">
+      <h3>{{ trip.busName }} ({{ trip.busNumber }})</h3>
+      <p>{{ trip.fromPlace }} → {{ trip.toPlace }} | {{ trip.tripDate }}</p>
+    </div>
+  }
+
+  @if (isLocked()) {
+    <div class="lock-banner">
+      ⏱️ Seats locked for: <strong>{{ formattedCountdown() }}</strong>
+      <span>Complete booking before timer expires!</span>
+    </div>
+  }
+
+  <div class="legend">
+    <span class="badge available">Available</span>
+    <span class="badge selected">Selected</span>
+    <span class="badge locked">Locked</span>
+    <span class="badge booked">Booked</span>
+  </div>
+
+  @if (loading()) {
+    <p>Loading seat layout...</p>
+  } @else {
+    <div class="bus-layout">
+      <div class="driver">🚌 Driver</div>
+      <div class="grid">
+        @for (row of seatRows(); track row.rowNumber) {
+          <div class="seat-row">
+            @for (seat of row.seats; track seat.tripSeatId) {
+              <button
+                type="button"
+                class="seat"
+                [class]="getSeatClass(seat)"
+                [disabled]="seat.status !== SeatStatus.Available || isLocked()"
+                (click)="toggleSeat(seat)">
+                {{ seat.seatNumber }}
+                @if (seat.isWindow) { <span class="win">🪟</span> }
+              </button>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  }
+
+  <div class="action-panel">
+    @if (!isLocked()) {
+      <p>Selected: <strong>{{ selectedCount() }}</strong> | Total: <strong>৳{{ totalFare() }}</strong></p>
+      <button class="btn-primary" [disabled]="selectedCount() === 0 || locking()" (click)="lockSeats()">
+        {{ locking() ? 'Locking...' : '🔒 Lock Seats (10 min)' }}
+      </button>
+    } @else {
+      <p>Locked: <strong>{{ lockResponse()?.seats?.length }}</strong> seats</p>
+      <button class="btn-success" (click)="proceed()">Proceed →</button>
+    }
+
+    @if (errorMessage()) {
+      <p class="error">{{ errorMessage() }}</p>
+    }
+  </div>
+</div>

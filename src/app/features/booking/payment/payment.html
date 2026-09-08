@@ -1,1 +1,44 @@
-<p>payment works!</p>
+<div class="payment-page">
+  <h3>💳 Payment</h3>
+
+  @if (trip(); as t) {
+    <div class="summary">
+      <p><strong>{{ t.busName }}</strong></p>
+      <p>{{ t.fromPlace }} → {{ t.toPlace }}</p>
+      <p>Seats: {{ lockResponse()?.seats?.length }} | Total: <strong>৳{{ totalAmount() }}</strong></p>
+    </div>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="submit()" class="payment-form">
+    <div class="form-group">
+      <label>Payment Method</label>
+      <select formControlName="paymentMethod">
+        <option value="bkash">bKash</option>
+        <option value="nagad">Nagad</option>
+        <option value="card">Card</option>
+        <option value="cash">Cash</option>
+      </select>
+    </div>
+
+    @if (paymentMethod.value !== 'cash') {
+      <div class="form-group">
+        <label>Transaction ID *</label>
+        <input type="text" formControlName="transactionId" placeholder="e.g. TXN123456" />
+        @if (form.controls.transactionId.invalid && form.controls.transactionId.touched) {
+          <small class="error">Transaction ID is required for online payments</small>
+        }
+      </div>
+    }
+
+    <div class="actions">
+      <button type="button" class="btn-secondary" (click)="router.navigate(['/booking/passengers'])">← Back</button>
+      <button type="submit" class="btn-success" [disabled]="loading()">
+        {{ loading() ? 'Confirming...' : '✅ Confirm Booking' }}
+      </button>
+    </div>
+  </form>
+
+  @if (errorMessage()) {
+    <p class="error-message">{{ errorMessage() }}</p>
+  }
+</div>

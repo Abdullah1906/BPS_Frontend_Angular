@@ -1,1 +1,53 @@
-<p>ticket works!</p>
+<div class="ticket-page">
+  @if (loading()) {
+    <p>Loading ticket...</p>
+  } @else if (ticket(); as t) {
+    <div class="ticket-card" id="print-area">
+      <div class="header">
+        <h2>🚌 Bus Ticket</h2>
+        <div class="pnr">PNR: <strong>{{ t.pnr }}</strong></div>
+      </div>
+
+      <div class="info-grid">
+        <div><span>Booking ID:</span> <strong>#{{ t.bookingId }}</strong></div>
+        <div><span>Status:</span> <span class="badge confirmed">Confirmed</span></div>
+        <div><span>Total:</span> <strong>৳{{ t.totalAmount }}</strong></div>
+        <div><span>Method:</span> <strong>{{ t.paymentMethod | titlecase }}</strong></div>
+      </div>
+
+      <h4>Passengers</h4>
+      <table>
+        <thead>
+          <tr>
+            <th>Seat</th>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Fare</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of t.passengers; track p.tripSeatId) {
+            <tr>
+              <td>{{ p.seatNumber }}</td>
+              <td>{{ p.passengerName }}</td>
+              <td>{{ p.passengerPhone }}</td>
+              <td>৳{{ p.fare }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <div class="footer">
+        <p>Booked: {{ t.createdAt | date:'medium' }}</p>
+        <p class="note">Please arrive 30 minutes before departure.</p>
+      </div>
+    </div>
+
+    <div class="actions no-print">
+      <button type="button" class="btn-primary" (click)="print()">🖨️ Print</button>
+      <button type="button" class="btn-secondary" (click)="router.navigate(['/booking/search'])">Book Another</button>
+    </div>
+  } @else {
+    <p class="error">{{ errorMessage() }}</p>
+  }
+</div>

@@ -1,1 +1,207 @@
-<p>search works!</p>
+<div class="container py-4 min-vh-100">
+
+  <!-- Search Section / Card -->
+  <section class="card shadow-sm border-0 mb-4">
+    <div class="card-header bg-white py-3 border-bottom-0">
+      <h1 class="h3 fw-bold mb-1">Search Bus Trips</h1>
+      <p class="text-muted small mb-0">Find available buses for your journey</p>
+    </div>
+
+    <div class="card-body p-4 pt-1">
+      <form [formGroup]="searchForm" (ngSubmit)="searchTrips()">
+        <div class="row g-3">
+
+          <!-- From -->
+          <div class="col-md-4">
+            <label for="fromPlace" class="form-label fw-semibold small">From</label>
+            <input
+              id="fromPlace"
+              type="text"
+              class="form-control"
+              formControlName="fromPlace"
+              placeholder="Enter departure place"
+              [class.is-invalid]="searchForm.controls.fromPlace.touched && searchForm.controls.fromPlace.invalid"
+            />
+            @if (searchForm.controls.fromPlace.touched && searchForm.controls.fromPlace.invalid) {
+              <div class="invalid-feedback">From place is required.</div>
+            }
+          </div>
+
+          <!-- To -->
+          <div class="col-md-4">
+            <label for="toPlace" class="form-label fw-semibold small">To</label>
+            <input
+              id="toPlace"
+              type="text"
+              class="form-control"
+              formControlName="toPlace"
+              placeholder="Enter destination"
+              [class.is-invalid]="searchForm.controls.toPlace.touched && searchForm.controls.toPlace.invalid"
+            />
+            @if (searchForm.controls.toPlace.touched && searchForm.controls.toPlace.invalid) {
+              <div class="invalid-feedback">To place is required.</div>
+            }
+          </div>
+
+          <!-- Date -->
+          <div class="col-md-4">
+            <label for="tripDate" class="form-label fw-semibold small">Travel Date</label>
+            <input
+              id="tripDate"
+              type="date"
+              class="form-control"
+              formControlName="tripDate"
+              [class.is-invalid]="searchForm.controls.tripDate.touched && searchForm.controls.tripDate.invalid"
+            />
+            @if (searchForm.controls.tripDate.touched && searchForm.controls.tripDate.invalid) {
+              <div class="invalid-feedback">Travel date is required.</div>
+            }
+          </div>
+
+          <!-- Submit Button -->
+          <div class="col-12 text-end mt-3">
+            <button
+              type="submit"
+              class="btn btn-primary px-4 fw-medium"
+              [disabled]="loading"
+            >
+              @if (loading) {
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                <span>Searching...</span>
+              } @else {
+                <span>Search Trips</span>
+              }
+            </button>
+          </div>
+
+        </div>
+      </form>
+
+      <!-- Error Message -->
+      @if (errorMessage) {
+        <div class="alert alert-danger py-2 mt-3 mb-0 small" role="alert">
+          {{ errorMessage }}
+        </div>
+      }
+    </div>
+  </section>
+
+
+  <!-- Results Section -->
+  @if (searched) {
+    <section class="results-section">
+
+      <!-- Header -->
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+          <h2 class="h4 fw-bold mb-0">Available Trips</h2>
+          <p class="text-muted small mb-0">
+            {{ trips.length }} trip{{ trips.length !== 1 ? 's' : '' }} found
+          </p>
+        </div>
+      </div>
+
+      <!-- No Result State -->
+      @if (trips.length === 0 && !loading) {
+        <div class="card shadow-sm border-0 text-center py-5 my-3">
+          <div class="card-body">
+            <div class="display-4 mb-2">🚌</div>
+            <h3 class="h5 fw-bold text-dark">No trips found</h3>
+            <p class="text-muted small mb-0">
+              No bus trips are available for the selected route and date.
+            </p>
+          </div>
+        </div>
+      }
+
+      <!-- Trip Cards List -->
+      <div class="d-flex flex-column gap-3">
+        @for (trip of trips; track trip.tripId) {
+          <div class="card shadow-sm border-0">
+            <div class="card-body p-3 p-md-4">
+              <div class="row align-items-center g-3">
+
+                <!-- Bus Information -->
+                <div class="col-md-3 border-end-md">
+                  <div class="d-flex align-items-center gap-3">
+                    <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center flex-shrink-0" style="width: 48px; height: 48px; font-size: 24px;">
+                      🚌
+                    </div>
+                    <div>
+                      <h3 class="h6 fw-bold mb-0 text-dark">{{ trip.busName }}</h3>
+                      <span class="badge bg-light text-secondary border fw-normal mt-1">{{ trip.busNumber }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Route & Time -->
+                <div class="col-md-4 border-end-md">
+                  <div class="d-flex justify-content-between align-items-center text-center px-lg-2">
+                    <div class="text-start">
+                      <strong class="d-block text-dark fw-bold">{{ trip.fromPlace }}</strong>
+                      <span class="text-muted small d-block">Departure</span>
+                      <span class="badge bg-primary-subtle text-primary mt-1">{{ formatTime(trip.departureTime) }}</span>
+                    </div>
+
+                    <div class="text-muted px-2">
+                      <span class="fs-5">→</span>
+                    </div>
+
+                    <div class="text-end">
+                      <strong class="d-block text-dark fw-bold">{{ trip.toPlace }}</strong>
+                      <span class="text-muted small d-block">Arrival</span>
+                      @if (trip.arrivalTime) {
+                        <span class="badge bg-secondary-subtle text-secondary mt-1">{{ formatTime(trip.arrivalTime) }}</span>
+                      }
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Trip Details (Date, Fare, Seats) -->
+                <div class="col-md-3 border-end-md">
+                  <div class="row text-center g-2">
+                    <div class="col-4">
+                      <span class="text-muted small d-block">Date</span>
+                      <strong class="small text-dark">{{ trip.tripDate | date:'dd MMM' }}</strong>
+                    </div>
+                    <div class="col-4">
+                      <span class="text-muted small d-block">Fare</span>
+                      <strong class="text-success">৳{{ trip.fare }}</strong>
+                    </div>
+                    <div class="col-4">
+                      <span class="text-muted small d-block">Seats</span>
+                      <strong [class.text-danger]="trip.availableSeats === 0" [class.text-primary]="trip.availableSeats > 0">
+                        {{ trip.availableSeats }}
+                      </strong>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Action Button -->
+                <div class="col-md-2 text-md-end">
+                  <button
+                    type="button"
+                    class="btn w-100 fw-medium"
+                    [class.btn-primary]="trip.availableSeats > 0"
+                    [class.btn-secondary]="trip.availableSeats === 0"
+                    [disabled]="trip.availableSeats === 0"
+                    (click)="selectTrip(trip)"
+                  >
+                    @if (trip.availableSeats > 0) {
+                      Select Trip
+                    } @else {
+                      Sold Out
+                    }
+                  </button>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+
+    </section>
+  }
+
+</div>
