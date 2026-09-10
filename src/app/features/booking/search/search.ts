@@ -8,7 +8,7 @@ import {
 
 import { TripSearchService } from '../search/service/search';
 import { TripSearchResponse } from '../models/trip-search.model';
-
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-trip-search',
   standalone: true,
@@ -25,6 +25,7 @@ export class TripSearchComponent {
   private readonly fb = inject(FormBuilder);
   private readonly tripSearchService = inject(TripSearchService);
   private readonly datePipe = inject(DatePipe);
+  private readonly router = inject(Router);
 
   trips: TripSearchResponse[] = [];
 
@@ -95,7 +96,9 @@ export class TripSearchComponent {
   selectTrip(trip: TripSearchResponse): void {
     console.log('Selected Trip:', trip);
 
-    // পরের step-এ এখানে Seat Map page-এ navigate করব।
+    if (trip && trip.tripId) {
+      this.router.navigate(['/booking/seat-map', trip.tripId]);
+    }
   }
 
   formatTime(time: string): string {

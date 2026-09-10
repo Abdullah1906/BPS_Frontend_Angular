@@ -21,6 +21,7 @@ import { TripScheduleForm } from './features/trips-schedules/trip-form/trip-form
 // import{Ticket} from './features/booking/ticket/ticket';
 // import{SeatMap} from './features/booking/seat-map/seat-map';
 import{TripSearchComponent} from './features/booking/search/search';
+import { SeatMap } from './features/booking/seat-map/seat-map';
 //import{Payment} from './features/booking/payment/payment';
 //import{Passenger} from './features/booking/passenger/passenger';
 
@@ -123,10 +124,10 @@ export const routes: Routes = [
         path: 'search',
         component: TripSearchComponent
       },
-      // {
-      //   path: 'seats/:tripId',
-      //   component: SeatMap
-      // },  
+      {
+        path: 'booking/seat-map/:tripId',
+        component: SeatMap
+      },  
       // {
       //   path: 'passengers',
       //   component: Passenger

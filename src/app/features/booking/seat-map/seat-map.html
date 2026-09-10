@@ -1,63 +1,133 @@
-<div class="seat-map">
-  @if (state.selectedTrip(); as trip) {
-    <div class="trip-header">
-      <h3>{{ trip.busName }} ({{ trip.busNumber }})</h3>
-      <p>{{ trip.fromPlace }} → {{ trip.toPlace }} | {{ trip.tripDate }}</p>
-    </div>
-  }
+<div class="container py-4">
 
-  @if (isLocked()) {
-    <div class="lock-banner">
-      ⏱️ Seats locked for: <strong>{{ formattedCountdown() }}</strong>
-      <span>Complete booking before timer expires!</span>
+  <!-- Header Section -->
+  <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+    <div>
+      <h4 class="fw-bold text-dark mb-1">Select Your Seats</h4>
+      <p class="text-secondary small mb-0">Choose one or more available seats to proceed with your booking.</p>
     </div>
-  }
-
-  <div class="legend">
-    <span class="badge available">Available</span>
-    <span class="badge selected">Selected</span>
-    <span class="badge locked">Locked</span>
-    <span class="badge booked">Booked</span>
   </div>
 
+  <!-- Error Alert -->
+  @if (errorMessage()) {
+    <div class="alert alert-danger alert-dismissible fade show d-flex align-items-center shadow-sm" role="alert">
+      <i class="bi bi-exclamation-triangle-fill me-2 fs-5"></i>
+      <div>{{ errorMessage() }}</div>
+    </div>
+  }
+
+  <!-- Loading Spinner -->
   @if (loading()) {
-    <p>Loading seat layout...</p>
+    <div class="text-center py-5 my-4">
+      <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <div class="mt-3 text-muted fw-medium fs-6">Loading seats map...</div>
+    </div>
   } @else {
-    <div class="bus-layout">
-      <div class="driver">🚌 Driver</div>
-      <div class="grid">
-        @for (row of seatRows(); track row.rowNumber) {
-          <div class="seat-row">
-            @for (seat of row.seats; track seat.tripSeatId) {
+
+    <!-- Legend -->
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-body py-3">
+        <div class="d-flex flex-wrap justify-content-around align-items-center gap-3">
+          <div class="d-flex align-items-center gap-2">
+            <span class="d-inline-block rounded-2 border border-secondary border-opacity-50 bg-white" style="width: 24px; height: 24px;"></span>
+            <span class="small fw-semibold text-secondary">Available</span>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <span class="d-inline-block rounded-2 bg-success text-white" style="width: 24px; height: 24px;"></span>
+            <span class="small fw-semibold text-secondary">Selected</span>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <span class="d-inline-block rounded-2 bg-warning bg-gradient text-dark" style="width: 24px; height: 24px;"></span>
+            <span class="small fw-semibold text-secondary">Locked</span>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <span class="d-inline-block rounded-2 bg-secondary text-white opacity-50" style="width: 24px; height: 24px;"></span>
+            <span class="small fw-semibold text-secondary">Booked</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bus Wrapper -->
+    <div class="card border shadow-sm mx-auto overflow-hidden" style="max-width: 420px; border-radius: 20px;">
+      
+      <!-- Driver Area Header -->
+      <div class="bg-light border-bottom p-3 d-flex justify-content-between align-items-center">
+        <div class="badge bg-secondary text-uppercase px-3 py-2 rounded-pill tracking-wider fw-bold">
+          Front / Driver
+        </div>
+        <div class="text-secondary">
+          <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-steering-wheel" viewBox="0 0 16 16">
+            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+            <path d="M8 13A5 5 0 1 0 8 3a5 5 0 0 0 0 10m0 1A6 6 0 1 0 8 2a6 6 0 0 0 0 12"/>
+            <path d="M8 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2"/>
+            <path d="M8 1a1 1 0 0 1 1 1v2.05a2.5 2.5 0 0 0-2 0V2a1 1 0 0 1 1-1M1 8a1 1 0 0 1 1-1h2.05a2.5 2.5 0 0 0 0 2H2a1 1 0 0 1-1-1m14 0a1 1 0 0 1-1 1h-2.05a2.5 2.5 0 0 0 0-2H14a1 1 0 0 1 1 1M8 11.5a2.5 2.5 0 0 0 1-.21V14a1 1 0 1 1-2 0v-2.71a2.5 2.5 0 0 0 1 .21"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Bus Wrapper -->
+      <div class="card border shadow-sm mx-auto overflow-hidden" style="max-width: 450px; border-radius: 20px;">
+        
+
+        <!-- Dynamic Seat Grid Container -->
+        <div class="card-body p-4 bg-light bg-opacity-25">
+          
+          
+          <div class="d-grid gap-3" style="grid-template-columns: repeat(5, 1fr);">
+
+            @for (r of spacerRows(); track r) {
+              <div [style.grid-row]="r" [style.grid-column]="3"></div>
+            }
+
+            @for (seat of seats(); track seat.tripSeatId) {
               <button
                 type="button"
-                class="seat"
+                class="btn p-0 fw-bold border border-2 rounded-3 transition-all d-flex align-items-center justify-content-center shadow-sm"
+                style="height: 48px; width: 48px; font-size: 0.875rem;"
+                [style.grid-row]="seat.rowNumber"
+                [style.grid-column]="getAdjustedColumn(seat)"
                 [class]="getSeatClass(seat)"
-                [disabled]="seat.status !== SeatStatus.Available || isLocked()"
+                [disabled]="!isAvailable(seat)"
                 (click)="toggleSeat(seat)">
                 {{ seat.seatNumber }}
-                @if (seat.isWindow) { <span class="win">🪟</span> }
               </button>
             }
           </div>
-        }
+        </div>
+      </div>
+
+      <!-- Bus Rear Footer -->
+      <div class="bg-light border-top py-2 text-center text-muted small fw-semibold">
+        REAR OF BUS
+      </div>
+
+    </div>
+
+    <!-- Sticky Selection Summary Bottom Bar -->
+    <div class="card border-0 shadow-lg mt-4 position-sticky bottom-0 bg-white z-3 rounded-4">
+      <div class="card-body d-flex justify-content-between align-items-center py-3 px-4">
+        <div>
+          <span class="text-muted small d-block">Selected Seats</span>
+          <div class="fw-bold fs-5 text-primary">
+            {{ selectedSeatIds().length }} <span class="fs-6 text-muted fw-normal">seat(s)</span>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          class="btn btn-primary btn-lg px-4 fs-6 fw-semibold rounded-3 shadow-sm d-flex align-items-center gap-2"
+          [disabled]="selectedSeatIds().length === 0"
+          (click)="continue()"
+        >
+          <span>Continue</span>
+          <i class="bi bi-arrow-right"></i>
+        </button>
       </div>
     </div>
+
   }
 
-  <div class="action-panel">
-    @if (!isLocked()) {
-      <p>Selected: <strong>{{ selectedCount() }}</strong> | Total: <strong>৳{{ totalFare() }}</strong></p>
-      <button class="btn-primary" [disabled]="selectedCount() === 0 || locking()" (click)="lockSeats()">
-        {{ locking() ? 'Locking...' : '🔒 Lock Seats (10 min)' }}
-      </button>
-    } @else {
-      <p>Locked: <strong>{{ lockResponse()?.seats?.length }}</strong> seats</p>
-      <button class="btn-success" (click)="proceed()">Proceed →</button>
-    }
-
-    @if (errorMessage()) {
-      <p class="error">{{ errorMessage() }}</p>
-    }
-  </div>
 </div>

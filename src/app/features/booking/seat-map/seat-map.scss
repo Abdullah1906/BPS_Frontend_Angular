@@ -1,0 +1,15 @@
+/* Custom Helper Styles */
+.hover-shadow:hover {
+  border-color: var(--bs-primary) !important;
+  color: var(--bs-primary) !important;
+  transform: translateY(-2px);
+  transition: all 0.2s ease-in-out;
+}
+
+.cursor-not-allowed {
+  cursor: not-allowed !important;
+}
+
+.tracking-wider {
+  letter-spacing: 0.1em;
+}
