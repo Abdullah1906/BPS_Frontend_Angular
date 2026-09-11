@@ -116,7 +116,7 @@
           </div>
         </div>
 
-        <button
+        <!-- <button
           type="button"
           class="btn btn-primary btn-lg px-4 fs-6 fw-semibold rounded-3 shadow-sm d-flex align-items-center gap-2"
           [disabled]="selectedSeatIds().length === 0"
@@ -124,6 +124,26 @@
         >
           <span>Continue</span>
           <i class="bi bi-arrow-right"></i>
+        </button> -->
+
+        <button
+          type="button"
+          class="btn btn-primary btn-lg px-4 fs-6 fw-semibold rounded-3 shadow-sm d-flex align-items-center gap-2"
+          [disabled]="
+            selectedSeatIds().length === 0 ||
+            locking()
+          "
+          (click)="lockSeats()"
+        >
+          @if (locking()) {
+            <span
+              class="spinner-border spinner-border-sm me-2">
+            </span>
+
+            Reserving...
+          } @else {
+            Continue
+          }
         </button>
       </div>
     </div>

@@ -9,6 +9,7 @@ import {
 import { TripSearchService } from '../search/service/search';
 import { TripSearchResponse } from '../models/trip-search.model';
 import { Router } from '@angular/router';
+import { BookingStateService } from '../services/booking-state.service';
 @Component({
   selector: 'app-trip-search',
   standalone: true,
@@ -26,7 +27,7 @@ export class TripSearchComponent {
   private readonly tripSearchService = inject(TripSearchService);
   private readonly datePipe = inject(DatePipe);
   private readonly router = inject(Router);
-
+ private readonly bookingState = inject(BookingStateService);
   trips: TripSearchResponse[] = [];
 
   loading = false;
@@ -97,6 +98,17 @@ export class TripSearchComponent {
     console.log('Selected Trip:', trip);
 
     if (trip && trip.tripId) {
+
+      this.bookingState.setJourneyDetails(
+      trip.fromPlace,
+      trip.toPlace,   
+      trip.tripDate  
+    );
+
+
+      this.bookingState.setTripFare(trip.fare);
+      this.bookingState.setDiscount((trip as any).discount ?? 0);
+
       this.router.navigate(['/booking/seat-map', trip.tripId]);
     }
   }

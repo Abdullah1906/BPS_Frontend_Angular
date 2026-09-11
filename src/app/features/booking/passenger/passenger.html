@@ -1,45 +1,245 @@
-<div class="passenger-page">
-  <h3>👤 Passenger Details</h3>
+<div class="passenger-page bg-light min-vh-100 py-4">
 
-  <div class="passenger-list">
-    @for (form of forms(); track $index) {
-      <!-- 🔧 Wrap in formGroup so we can use formControlName -->
-      <form [formGroup]="form" class="passenger-card">
-        <div class="seat-badge">Seat {{ form.value.seatNumber }}</div>
+  <div class="container">
 
-        <div class="form-group">
-          <label>Full Name *</label>
-          <!-- 🔧 Use formControlName instead of [formControl] -->
-          <input type="text" formControlName="passengerName" />
-          @if (form.get('passengerName')?.invalid && form.get('passengerName')?.touched) {
-            <small class="error">Name is required</small>
-          }
-        </div>
+    <!-- HEADER -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 pb-2 border-bottom">
 
-        <div class="form-row">
-          <div class="form-group">
-            <label>Phone *</label>
-            <input type="tel" formControlName="passengerPhone" placeholder="01XXXXXXXXX" />
-            @if (form.get('passengerPhone')?.invalid && form.get('passengerPhone')?.touched) {
-              <small class="error">Valid BD number required</small>
-            }
+      <div class="mb-3 mb-md-0">
+        <h3 class="fw-bold mb-1">
+          Passenger Information
+        </h3>
+
+        <p class="text-muted mb-0">
+          Enter passenger details for each selected seat.
+        </p>
+      </div>
+
+      <div class="lock-timer p-2 px-3 bg-white border rounded shadow-sm d-flex align-items-center gap-2">
+
+        <span class="text-muted small fw-semibold">
+          Seat Hold
+        </span>
+
+        <span class="badge bg-danger text-white fs-6 font-monospace">
+          {{ countdownText() }}
+        </span>
+
+      </div>
+
+    </div>
+
+
+    <!-- FORM -->
+    <form
+      [formGroup]="passengerForm"
+      (ngSubmit)="continueToPayment()">
+
+      <div formArrayName="passengers" class="d-flex flex-column gap-3 mb-4">
+
+        @for (
+          passenger of passengers.controls;
+          track $index;
+          let i = $index
+        ) {
+
+          <div
+            class="card border-0 shadow-sm"
+            [formGroupName]="i">
+
+            <!-- CARD HEADER -->
+            <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom-0">
+
+              <div>
+
+                <div class="fw-bold fs-5 text-primary">
+                  Passenger {{ i + 1 }}
+                </div>
+
+                <div class="text-muted small">
+                  Passenger details
+                </div>
+
+              </div>
+
+              <div class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 fs-6">
+
+                Seat
+                <strong class="ms-1">
+                  {{
+                    getSeatNumber(
+                      passenger.get('tripSeatId')?.value
+                    )
+                  }}
+                </strong>
+
+              </div>
+
+            </div>
+
+
+            <!-- CARD BODY FORM -->
+            <div class="card-body pt-0">
+
+              <div class="row g-3">
+
+                <!-- NAME -->
+                <div class="col-md-6 col-lg-4">
+
+                  <label class="form-label fw-medium">
+                    Passenger Name
+                    <span class="text-danger">*</span>
+                  </label>
+
+                  <input
+                    type="text"
+                    class="form-control"
+                    formControlName="passengerName"
+                    placeholder="Enter passenger name"
+                    [class.is-invalid]="
+                      isInvalid(i, 'passengerName')
+                    "
+                  />
+
+                  @if (
+                    isInvalid(i, 'passengerName')
+                  ) {
+
+                    <div class="invalid-feedback">
+
+                      @if (
+                        passenger.get('passengerName')?.hasError('required')
+                      ) {
+                        Name is required.
+                      }
+                      @else if (
+                        passenger.get('passengerName')?.hasError('minlength')
+                      ) {
+                        Name must be at least 2 characters.
+                      }
+
+                    </div>
+
+                  }
+
+                </div>
+
+
+                <!-- PHONE -->
+                <div class="col-md-6 col-lg-4">
+
+                  <label class="form-label fw-medium">
+                    Phone Number
+                    <span class="text-danger">*</span>
+                  </label>
+
+                  <input
+                    type="tel"
+                    class="form-control"
+                    formControlName="passengerPhone"
+                    placeholder="01XXXXXXXXX"
+                    maxlength="11"
+                    [class.is-invalid]="
+                      isInvalid(i, 'passengerPhone')
+                    "
+                  />
+
+                  @if (
+                    isInvalid(i, 'passengerPhone')
+                  ) {
+
+                    <div class="invalid-feedback">
+
+                      @if (
+                        passenger.get('passengerPhone')?.hasError('required')
+                      ) {
+                        Phone number is required.
+                      }
+                      @else {
+                        Enter a valid Bangladesh phone number.
+                      }
+
+                    </div>
+
+                  }
+
+                </div>
+
+
+                <!-- NID -->
+                <div class="col-md-6 col-lg-4">
+
+                  <label class="form-label fw-medium">
+
+                    NID
+
+                    <span class="text-muted fw-normal ms-1">
+                      (Optional)
+                    </span>
+
+                  </label>
+
+                  <input
+                    type="text"
+                    class="form-control"
+                    formControlName="passengerNID"
+                    placeholder="Enter NID number"
+                    maxlength="50"
+                    [class.is-invalid]="
+                      isInvalid(i, 'passengerNID')
+                    "
+                  />
+
+                  @if (
+                    isInvalid(i, 'passengerNID')
+                  ) {
+
+                    <div class="invalid-feedback">
+                      NID cannot exceed 50 characters.
+                    </div>
+
+                  }
+
+                </div>
+
+              </div>
+
+            </div>
+
           </div>
 
-          <div class="form-group">
-            <label>NID (Optional)</label>
-            <input type="text" formControlName="passengerNID" />
-          </div>
-        </div>
-      </form>
-    }
+        }
+
+      </div>
+
+
+      <!-- ACTIONS -->
+      <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2 pt-2">
+
+        <button
+          type="button"
+          class="btn btn-outline-secondary px-4 w-100 w-sm-auto order-2 order-sm-1"
+          (click)="goBackToSeats()">
+          Back to Seats
+        </button>
+
+        <button
+          type="submit"
+          class="btn btn-primary px-4 w-100 w-sm-auto order-1 order-sm-2"
+          [disabled]="passengerForm.invalid">
+
+          Continue to Payment
+
+          <span class="ms-1">
+            &rarr;
+          </span>
+
+        </button>
+
+      </div>
+
+    </form>
+
   </div>
 
-  <div class="actions">
-    <button type="button" class="btn-secondary" (click)="goBack()">← Back</button>
-    <button type="button" class="btn-primary" (click)="submit()">Continue to Payment →</button>
-  </div>
-
-  @if (errorMessage()) {
-    <p class="error-message">{{ errorMessage() }}</p>
-  }
 </div>

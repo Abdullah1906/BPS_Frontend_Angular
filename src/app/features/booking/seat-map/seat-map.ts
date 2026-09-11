@@ -3,6 +3,7 @@ import {
   Component,
   inject,
   OnInit,
+  OnDestroy,
   signal
 } from '@angular/core';
 
@@ -16,6 +17,8 @@ import {
 
 import { SeatStatus } from '../models/seat-status.enum';
 import{computed} from '@angular/core';
+import { BookingService } from '../services/booking.service';
+import { BookingStateService } from '../services/booking-state.service';
 
 @Component({
   selector: 'app-seat-map',
@@ -24,18 +27,26 @@ import{computed} from '@angular/core';
   styleUrl: './seat-map.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SeatMap implements OnInit {
+export class SeatMap implements OnInit, OnDestroy {
 
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly tripSeatService = inject(SeatMapService);
+  private readonly bookingService = inject(BookingService);
+  private readonly bookingState = inject(BookingStateService);
+
+  private countdownTimer: ReturnType<typeof setInterval> | null = null;
 
   readonly seats = signal<TripSeatDto[]>([]);
   readonly selectedSeatIds = signal<number[]>([]);
 
   readonly loading = signal(false);
+  readonly locking = signal(false);
   readonly errorMessage = signal('');
+  readonly successMessage =signal('');
 
+
+  readonly remainingSeconds = signal(0);
   readonly SeatStatus = SeatStatus;
 
   readonly tripId = signal<number>(0);
@@ -134,8 +145,227 @@ export class SeatMap implements OnInit {
     // Next step:
     // Lock selected seats
   }
+  lockSeats(): void {
 
-   getSeatClass(seat: TripSeatDto): string {
+    this.errorMessage.set('');
+    this.successMessage.set('');
+
+    const selected =
+      this.selectedSeatIds();
+
+    if (selected.length === 0) {
+
+      this.errorMessage.set(
+        'Please select at least one seat.'
+      );
+
+      return;
+    }
+
+    this.locking.set(true);
+
+    this.bookingService
+      .lockSeats({
+        tripId: this.tripId(),
+        tripSeatIds: selected
+      })
+      .subscribe({
+
+        next: response => {
+
+        //   this.locking.set(false);
+
+        //   this.successMessage.set(
+        //     'Seats locked successfully.'
+        //   );
+
+        //   this.bookingState.setLockedSeats(
+        //   this.tripId(),
+        //   response.seats,
+        //   response.lockedUntil
+        // );
+
+          this.locking.set(false);
+
+            console.log('LOCK API RESPONSE:', response);
+
+            this.bookingState.setLockedSeats(
+              this.tripId(),
+              response.seats,
+              response.lockedUntil
+            );
+
+            console.log(
+              'STATE AFTER LOCK:',
+              {
+                tripId: this.bookingState.tripId(),
+                lockedSeats: this.bookingState.lockedSeats(),
+                lockedUntil: this.bookingState.lockedUntil()
+              }
+            );
+
+
+          /*
+           * Update seat status locally.
+           */
+          const lockedIds =
+            response.seats.map(
+              seat => seat.tripSeatId
+            );
+
+          this.seats.update(seats =>
+            seats.map(seat =>
+              lockedIds.includes(
+                seat.tripSeatId
+              )
+                ? {
+                    ...seat,
+                    status: SeatStatus.Locked
+                  }
+                : seat
+            )
+          );
+
+          /*
+           * Start countdown from
+           * server response.
+           */
+          this.startCountdown(
+            response.lockedUntil
+          );
+
+          /*
+           * Go to passenger page.
+           */
+          setTimeout(() => {
+
+            this.router.navigate(
+              ['/booking/passenger'],
+              {
+                queryParams: {
+                  tripId: this.tripId()
+                }
+              }
+            );
+
+          }, 500);
+        },
+
+        error: error => {
+
+          console.error(
+            'Failed to lock seats',
+            error
+          );
+
+          this.locking.set(false);
+
+          this.errorMessage.set(
+            error?.error?.detail ??
+            error?.error?.message ??
+            'Selected seats could not be locked.'
+          );
+
+          /*
+           * Refresh seat status because
+           * another customer may have
+           * taken one of the seats.
+           */
+          this.loadSeats();
+        }
+      });
+  }
+
+  private startCountdown(
+    lockedUntil: string
+  ): void {
+
+    this.stopCountdown();
+
+    const lockedUntilTime =
+      new Date(lockedUntil).getTime();
+
+    this.updateRemainingTime(
+      lockedUntilTime
+    );
+
+    this.countdownTimer =
+      setInterval(() => {
+
+        this.updateRemainingTime(
+          lockedUntilTime
+        );
+
+      }, 1000);
+  }
+
+  private updateRemainingTime(
+    lockedUntilTime: number
+  ): void {
+
+    const now = Date.now();
+
+    const seconds = Math.max(
+      0,
+      Math.ceil(
+        (lockedUntilTime - now) / 1000
+      )
+    );
+
+    this.remainingSeconds.set(
+      seconds
+    );
+
+    if (seconds === 0) {
+
+      this.stopCountdown();
+
+      this.errorMessage.set(
+        'Your seat lock has expired.'
+      );
+
+      this.selectedSeatIds.set([]);
+
+      this.loadSeats();
+    }
+  }
+
+  get countdownText(): string {
+
+    const totalSeconds =
+      this.remainingSeconds();
+
+    const minutes =
+      Math.floor(totalSeconds / 60);
+
+    const seconds =
+      totalSeconds % 60;
+
+    return `${minutes
+      .toString()
+      .padStart(2, '0')}:${seconds
+      .toString()
+      .padStart(2, '0')}`;
+  }
+
+  ngOnDestroy(): void {
+
+    this.stopCountdown();
+  }
+
+  private stopCountdown(): void {
+
+    if (this.countdownTimer) {
+
+      clearInterval(
+        this.countdownTimer
+      );
+
+      this.countdownTimer = null;
+    }
+  }
+
+  getSeatClass(seat: TripSeatDto): string {
   if (this.isSelected(seat.tripSeatId)) {
     return 'btn-success text-white border-success shadow';
   }

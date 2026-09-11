@@ -18,12 +18,13 @@ import { RouteForm } from './features/routes/route-form/route-form';
 import { TripScheduleList } from './features/trips-schedules/trip-list/trip-list';
 import { TripScheduleForm } from './features/trips-schedules/trip-form/trip-form';
 
-// import{Ticket} from './features/booking/ticket/ticket';
-// import{SeatMap} from './features/booking/seat-map/seat-map';
+
 import{TripSearchComponent} from './features/booking/search/search';
 import { SeatMap } from './features/booking/seat-map/seat-map';
-//import{Payment} from './features/booking/payment/payment';
-//import{Passenger} from './features/booking/passenger/passenger';
+import { Passenger } from './features/booking/passenger/passenger';
+import { Payment } from './features/booking/payment/payment';
+import { Ticket } from './features/booking/ticket/ticket';
+
 
 export const routes: Routes = [
 
@@ -128,30 +129,18 @@ export const routes: Routes = [
         path: 'booking/seat-map/:tripId',
         component: SeatMap
       },  
-      // {
-      //   path: 'passengers',
-      //   component: Passenger
-      // },
-      // {
-      //   path: 'payment',
-      //   component: Payment
-      // },
-      // {
-      //   path: 'ticket/:pnr',
-      //   component: Ticket
-      // },
-
-      // {
-      //   path: 'booking',
-      //   children: [
-      //     { path: '', redirectTo: 'search', pathMatch: 'full' },
-      //     // { path: 'search', component: Search },
-      //     // { path: 'seats/:tripId', component: SeatMap },
-      //     { path: 'passengers', component: Passenger },
-      //     { path: 'payment', component: Payment },
-      //     // { path: 'ticket/:pnr', component: Ticket }
-      //   ]
-      // }
+      {
+        path: 'booking/passenger',
+        component: Passenger
+      },
+      {
+        path: 'booking/payment',
+        component: Payment
+      },
+      {
+        path: 'booking/ticket',
+        component: Ticket
+      }
 
     ]
   },
