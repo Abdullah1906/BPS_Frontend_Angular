@@ -1,44 +1,211 @@
-<div class="payment-page">
-  <h3>💳 Payment</h3>
+<div class="container py-4">
 
-  @if (trip(); as t) {
-    <div class="summary">
-      <p><strong>{{ t.busName }}</strong></p>
-      <p>{{ t.fromPlace }} → {{ t.toPlace }}</p>
-      <p>Seats: {{ lockResponse()?.seats?.length }} | Total: <strong>৳{{ totalAmount() }}</strong></p>
-    </div>
-  }
+  <div class="row g-4">
 
-  <form [formGroup]="form" (ngSubmit)="submit()" class="payment-form">
-    <div class="form-group">
-      <label>Payment Method</label>
-      <select formControlName="paymentMethod">
-        <option value="bkash">bKash</option>
-        <option value="nagad">Nagad</option>
-        <option value="card">Card</option>
-        <option value="cash">Cash</option>
-      </select>
-    </div>
+    <!-- LEFT: Passenger Summary -->
+    <div class="col-lg-8">
 
-    @if (paymentMethod.value !== 'cash') {
-      <div class="form-group">
-        <label>Transaction ID *</label>
-        <input type="text" formControlName="transactionId" placeholder="e.g. TXN123456" />
-        @if (form.controls.transactionId.invalid && form.controls.transactionId.touched) {
-          <small class="error">Transaction ID is required for online payments</small>
-        }
+      <div class="card border-0 shadow-sm rounded-4">
+
+        <div class="card-body p-4">
+
+          <div class="border-bottom pb-3 mb-4">
+            <h4 class="fw-bold mb-1">
+              Booking Summary
+            </h4>
+            <p class="text-secondary small mb-0">
+              Review passenger details and seat fare before confirming.
+            </p>
+          </div>
+
+          <h6 class="fw-semibold text-uppercase text-muted tracking-wide small mb-3">
+            Passengers Detail
+          </h6>
+
+          @for (
+            passenger of passengers();
+            track passenger.tripSeatId;
+            let i = $index
+          ) {
+
+            <div class="card border mb-3 bg-body-tertiary rounded-3">
+              <div class="card-body p-3">
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <div>
+                    <h6 class="fw-bold mb-0">
+                      Passenger {{ i + 1 }}
+                    </h6>
+                    <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill mt-1">
+                      Seat {{ getSeatNumber(passenger.tripSeatId) }}
+                    </span>
+                  </div>
+
+                  <div class="text-end">
+                    @if (discount() > 0) {
+                      <div class="text-decoration-line-through text-muted small">
+                        ৳{{ tripFare() | number:'1.2-2' }}
+                      </div>
+                      <div class="fw-bold text-success fs-5">
+                        ৳{{ (tripFare() - discount()) | number:'1.2-2' }}
+                      </div>
+                    } @else {
+                      <div class="fw-bold text-dark fs-5">
+                        ৳{{ tripFare() | number:'1.2-2' }}
+                      </div>
+                    }
+                  </div>
+                </div>
+
+                <div class="row g-3 pt-2 border-top">
+
+                  <div class="col-md-6">
+                    <small class="text-secondary d-block">Name</small>
+                    <span class="fw-medium text-dark">{{ passenger.passengerName }}</span>
+                  </div>
+
+                  <div class="col-md-6">
+                    <small class="text-secondary d-block">Phone</small>
+                    <span class="fw-medium text-dark">{{ passenger.passengerPhone }}</span>
+                  </div>
+
+                  @if (passenger.passengerNID) {
+                    <div class="col-12">
+                      <small class="text-secondary d-block">NID</small>
+                      <span class="fw-medium text-dark">{{ passenger.passengerNID }}</span>
+                    </div>
+                  }
+
+                </div>
+
+              </div>
+            </div>
+
+          }
+
+        </div>
+
       </div>
-    }
 
-    <div class="actions">
-      <button type="button" class="btn-secondary" (click)="router.navigate(['/booking/passengers'])">← Back</button>
-      <button type="submit" class="btn-success" [disabled]="loading()">
-        {{ loading() ? 'Confirming...' : '✅ Confirm Booking' }}
-      </button>
     </div>
-  </form>
 
-  @if (errorMessage()) {
-    <p class="error-message">{{ errorMessage() }}</p>
-  }
+    <!-- RIGHT: Payment & Bill Summary -->
+    <div class="col-lg-4">
+
+      <div class="card border-0 shadow-sm rounded-4 sticky-top" style="top: 1rem;">
+
+        <div class="card-body p-4">
+
+          <h5 class="fw-bold border-bottom pb-3 mb-4">
+            Payment Options
+          </h5>
+
+          <!-- PAYMENT METHOD -->
+          <div class="mb-3">
+            <label class="form-label fw-semibold text-dark small">
+              Payment Method
+            </label>
+
+            <select
+              class="form-select form-select-lg fs-6"
+              [(ngModel)]="paymentMethod">
+
+              <option value="Cash">Cash</option>
+              <option value="bKash">bKash</option>
+              <option value="Card">Card</option>
+
+            </select>
+          </div>
+
+          <!-- TRANSACTION -->
+          @if (paymentMethod !== 'Cash') {
+
+            <div class="mb-3">
+              <label class="form-label fw-semibold text-dark small">
+                Transaction ID
+              </label>
+
+              <input
+                type="text"
+                class="form-control form-control-lg fs-6"
+                placeholder="Enter transaction ID"
+                [(ngModel)]="transactionId"
+              />
+            </div>
+
+          }
+
+          <!-- BILL BREAKDOWN -->
+          <div class="bg-body-tertiary p-3 rounded-3 mb-4">
+
+            <div class="d-flex justify-content-between mb-2">
+              <span class="text-secondary">Seats Count</span>
+              <span class="fw-semibold">{{ passengers().length }}</span>
+            </div>
+
+            <div class="d-flex justify-content-between mb-2">
+              <span class="text-secondary">Fare / Seat</span>
+              <span class="fw-semibold">৳{{ tripFare() | number:'1.2-2' }}</span>
+            </div>
+
+            <div class="d-flex justify-content-between mb-2">
+              <span class="text-secondary">Subtotal</span>
+              <span class="fw-semibold">৳{{ totalAmount() | number:'1.2-2' }}</span>
+            </div>
+
+            @if (totalDiscount() > 0) {
+              <div class="d-flex justify-content-between mb-2 text-success">
+                <span>Discount</span>
+                <span class="fw-semibold">-৳{{ totalDiscount() | number:'1.2-2' }}</span>
+              </div>
+            }
+
+            <hr class="my-2">
+
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="fw-bold text-dark">Total Payable</span>
+              <span class="fw-bold fs-4 text-primary">৳{{ netTotal() | number:'1.2-2' }}</span>
+            </div>
+
+          </div>
+
+          <!-- ACTION BUTTONS -->
+          <div class="d-grid gap-2">
+
+            <button
+              type="button"
+              class="btn btn-primary btn-lg fs-6 py-2"
+              [disabled]="isSubmitting"
+              (click)="confirmBooking()">
+
+              @if (isSubmitting) {
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Processing...
+              }
+              @else {
+                Confirm Booking
+              }
+
+            </button>
+
+            <button
+              type="button"
+              class="btn btn-outline-secondary btn-lg fs-6 py-2"
+              [disabled]="isSubmitting"
+              (click)="backToPassenger()">
+
+              Back
+
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
 </div>

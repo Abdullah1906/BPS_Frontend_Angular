@@ -1,53 +1,111 @@
-<div class="ticket-page">
-  @if (loading()) {
-    <p>Loading ticket...</p>
-  } @else if (ticket(); as t) {
-    <div class="ticket-card" id="print-area">
-      <div class="header">
-        <h2>🚌 Bus Ticket</h2>
-        <div class="pnr">PNR: <strong>{{ t.pnr }}</strong></div>
+<div class="ticket-page py-4 min-vh-100">
+  @if (booking; as ticket) {
+    <div class="ticket-wrapper mx-auto" style="max-width: 750px;">
+      
+      <!-- MAIN TICKET PAPER CARD -->
+      <div class="ticket-card rounded-3 shadow-sm p-4">
+        
+        <!-- HEADER -->
+        <div class="d-flex justify-content-between align-items-center pb-3 border-bottom border-secondary-subtle">
+          <div>
+            <h3 class="fw-bold text-dark mb-0 tracking-wide">BUS TICKET</h3>
+            <span class="text-secondary small fw-semibold">Bus Position Solution (BPS)</span>
+          </div>
+          <div class="text-end">
+            <span class="badge bg-dark text-white px-3 py-2 fs-6 fw-bold">
+              {{ ticket.bookingStatus }}
+            </span>
+          </div>
+        </div>
+
+        <!-- PNR & JOURNEY DATE BAR -->
+        <div class="row my-3 py-3 rounded mx-0 paper-section-bg border border-secondary-subtle">
+          <div class="col-6">
+            <small class="text-muted d-block text-uppercase fw-bold fs-7">PNR Code</small>
+            <span class="fs-4 fw-bold font-monospace text-dark">{{ ticket.pnr }}</span>
+          </div>
+          <div class="col-6 text-end">
+            <small class="text-muted d-block text-uppercase fw-bold fs-7">Journey Date</small>
+            <span class="fs-5 fw-bold text-dark">{{ ticket.journeyDate | date:'mediumDate' }}</span>
+          </div>
+        </div>
+
+        <!-- ROUTE DETAILS -->
+        <div class="row text-center my-4 py-3 border-top border-bottom border-secondary-subtle">
+          <div class="col-5 text-start">
+            <small class="text-muted text-uppercase d-block fw-bold fs-7">Boarding From</small>
+            <h3 class="fw-bold text-dark mb-0">{{ ticket.fromPlaceName }}</h3>
+          </div>
+          <div class="col-2 d-flex align-items-center justify-content-center">
+            <span class="fs-3 text-secondary">➔</span>
+          </div>
+          <div class="col-5 text-end">
+            <small class="text-muted text-uppercase d-block fw-bold fs-7">Dropping To</small>
+            <h3 class="fw-bold text-dark mb-0">{{ ticket.toPlaceName }}</h3>
+          </div>
+        </div>
+
+        <!-- PASSENGER & SEAT TABLE -->
+        <div class="mb-4">
+          <h6 class="fw-bold text-uppercase text-muted mb-2 fs-7">Passenger & Seat Details</h6>
+          <table class="table table-bordered align-middle mb-0 border-secondary-subtle">
+            <thead class="paper-section-bg">
+              <tr class="fs-7 text-uppercase text-dark">
+                <th style="width: 15%;">Seat</th>
+                <th>Passenger Name</th>
+                <th>Phone Number</th>
+                <th class="text-end" style="width: 25%;">Fare</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (passenger of ticket.passengers; track passenger.tripSeatId) {
+                <tr>
+                  <td class="fw-bold text-center paper-section-bg fs-5 text-dark">{{ passenger.seatNumber }}</td>
+                  <td class="fw-semibold text-dark">{{ passenger.passengerName }}</td>
+                  <td class="text-secondary">{{ passenger.passengerPhone }}</td>
+                  <td class="text-end fw-bold text-dark">৳{{ passenger.fare | number:'1.2-2' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <!-- PAYMENT SUMMARY -->
+        <div class="row g-3 align-items-center pt-2 border-top border-secondary-subtle">
+          <div class="col-6">
+            <p class="mb-1 text-dark"><strong>Payment Status:</strong> <span class="text-success fw-bold">{{ ticket.paymentStatus }}</span></p>
+            <p class="mb-0 text-dark"><strong>Payment Method:</strong> <span class="text-secondary fw-semibold">{{ ticket.paymentMethod }}</span></p>
+          </div>
+          <div class="col-6 text-end">
+            <small class="text-muted text-uppercase d-block fw-bold fs-7">Total Fare</small>
+            <h2 class="fw-bold text-dark mb-0">৳{{ ticket.totalAmount | number:'1.2-2' }}</h2>
+          </div>
+        </div>
+
+        <!-- FOOTER & BARCODE STUB -->
+        <div class="mt-4 pt-3 border-top border-secondary-subtle text-muted fs-7 d-flex justify-content-between align-items-center">
+          <div>
+            <div>* Please show this ticket at the counter before boarding.</div>
+            <div>* Arrive 15 minutes prior to departure.</div>
+          </div>
+          <div class="text-end">
+            <div class="barcode-stub bg-dark rounded" style="width: 120px; height: 30px; opacity: 0.85;"></div>
+            <span class="font-monospace text-muted d-block mt-1 fs-8">{{ ticket.pnr }}</span>
+          </div>
+        </div>
+
       </div>
 
-      <div class="info-grid">
-        <div><span>Booking ID:</span> <strong>#{{ t.bookingId }}</strong></div>
-        <div><span>Status:</span> <span class="badge confirmed">Confirmed</span></div>
-        <div><span>Total:</span> <strong>৳{{ t.totalAmount }}</strong></div>
-        <div><span>Method:</span> <strong>{{ t.paymentMethod | titlecase }}</strong></div>
+      <!-- ACTION BUTTONS -->
+      <div class="d-flex gap-3 justify-content-end mt-4 d-print-none">
+        <button type="button" class="btn btn-outline-secondary px-4 fw-bold" (click)="goHome()">
+          Done
+        </button>
+        <button type="button" class="btn btn-dark px-4 fw-bold" (click)="printTicket()">
+          Print Ticket
+        </button>
       </div>
 
-      <h4>Passengers</h4>
-      <table>
-        <thead>
-          <tr>
-            <th>Seat</th>
-            <th>Name</th>
-            <th>Phone</th>
-            <th>Fare</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (p of t.passengers; track p.tripSeatId) {
-            <tr>
-              <td>{{ p.seatNumber }}</td>
-              <td>{{ p.passengerName }}</td>
-              <td>{{ p.passengerPhone }}</td>
-              <td>৳{{ p.fare }}</td>
-            </tr>
-          }
-        </tbody>
-      </table>
-
-      <div class="footer">
-        <p>Booked: {{ t.createdAt | date:'medium' }}</p>
-        <p class="note">Please arrive 30 minutes before departure.</p>
-      </div>
     </div>
-
-    <div class="actions no-print">
-      <button type="button" class="btn-primary" (click)="print()">🖨️ Print</button>
-      <button type="button" class="btn-secondary" (click)="router.navigate(['/booking/search'])">Book Another</button>
-    </div>
-  } @else {
-    <p class="error">{{ errorMessage() }}</p>
   }
 </div>
