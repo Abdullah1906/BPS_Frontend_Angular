@@ -1,56 +1,65 @@
 @import "@fontsource/noto-sans-bengali/400.css";
 @import "@fontsource/noto-sans-bengali/700.css";
 
-
 html,
 body {
   font-family: "Noto Sans Bengali", sans-serif;
 }
 
-/* src/styles.scss */
 
+/* GLOBAL PRINT STYLES */
 @media print {
-
-  app-sidebar,
-  .sidebar,
-  .sidebar-wrapper,
-  .sidebar-footer,
-  .logout-btn,
-  .navbar,
-  header,
-  footer,
-  aside,
-  nav,
-  .d-print-none {
-    display: none !important;
-    visibility: hidden !important;
-    height: 0 !important;
-    width: 0 !important;
+  @page {
+    size: A4 portrait;
+    margin: 0;
+    height: 65%; 
   }
 
+  /* 1. Hide everything on the body level */
+  body * {
+    visibility: hidden !important;
+  }
 
-  body, html {
+  /* 2. Reset html/body canvas */
+  html,
+  body {
     background: #ffffff !important;
     margin: 0 !important;
     padding: 0 !important;
-  }
-
-
-  body * {
-    visibility: hidden;
-  }
-
-  .ticket-wrapper,
-  .ticket-wrapper * {
-    visibility: visible;
-  }
-
-  .ticket-wrapper {
-    position: absolute !important;
-    left: 0 !important;
-    top: 0 !important;
     width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  /* 3. Make ONLY the ticket card and its contents visible */
+  #print-ticket,
+  #print-ticket * {
+    visibility: visible !important;
+  }
+
+  /* 4. Position the ticket card at the top-left of the printed page */
+  #print-ticket {
+    position: absolute !important;
+    left: 50% !important;
+    //top: 20px !important;
+    transform: translateX(-50%) !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    box-shadow: none !important;
+    border: 1px solid #fffffe !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* 5. Ensure background colors & table borders print correctly */
+  .paper-section-bg {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .table {
+    border-color: #e2dbce !important;
   }
 }
+

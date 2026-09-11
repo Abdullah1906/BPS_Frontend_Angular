@@ -27,7 +27,21 @@ export class TripSearchComponent {
   private readonly tripSearchService = inject(TripSearchService);
   private readonly datePipe = inject(DatePipe);
   private readonly router = inject(Router);
- private readonly bookingState = inject(BookingStateService);
+  private readonly bookingState = inject(BookingStateService);
+
+
+  private getTodayDate(): string {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    
+    return `${year}-${month}-${day}`; 
+  }
+
+  // For Today date as a default value
+  todayDate: string = this.getTodayDate();
+
   trips: TripSearchResponse[] = [];
 
   loading = false;
@@ -37,7 +51,7 @@ export class TripSearchComponent {
   searchForm = this.fb.nonNullable.group({
     fromPlace: ['', Validators.required],
     toPlace: ['', Validators.required],
-    tripDate: ['', Validators.required]
+    tripDate: [this.todayDate, Validators.required]
   });
 
   searchTrips(): void {
@@ -109,7 +123,12 @@ export class TripSearchComponent {
       this.bookingState.setTripFare(trip.fare);
       this.bookingState.setDiscount((trip as any).discount ?? 0);
 
-      this.router.navigate(['/booking/seat-map', trip.tripId]);
+      //this.router.navigate(['/booking/seat-map', trip.tripId]);
+      const url = this.router.serializeUrl(
+        this.router.createUrlTree(['/booking/seat-map', trip.tripId])
+      );
+      
+      window.open(url, '_blank');
     }
   }
 

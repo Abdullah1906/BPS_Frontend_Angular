@@ -1,37 +1,101 @@
+// .ticket-page {
+//   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+//   background-color: #f4f6f8;
+
+//   .fs-7 {
+//     font-size: 0.75rem;
+//   }
+
+//   .fs-8 {
+//     font-size: 0.65rem;
+//   }
+
+//   .tracking-wide {
+//     letter-spacing: 1.5px;
+//   }
+
+//   /* 🎟️ TICKET PAPER COLOR) */
+//   .ticket-card {
+    
+//     background-color: #fdfbf7 !important; 
+//     border: 1px solid #e2dbce !important;
+
+//     /* অপশন ২: */
+//     // background-color: #f0f6ff !important;
+//     // border: 1px solid #cce0ff !important;
+//   }
+
+//   /* Paper Inner Section */
+//   .paper-section-bg {
+//     background-color: #f5efe6 !important; 
+//     // background-color: #e3eeef !important; /* option 2*/
+//   }
+
+
+//   .barcode-stub {
+//     background: repeating-linear-gradient(
+//       90deg,
+//       #000,
+//       #000 2px,
+//       #fff 2px,
+//       #fff 4px
+//     ) !important;
+//   }
+// }
+
+// /* PRINT MEDIA RULES */
+// @media print {
+
+//   @page {
+//     size: A4 portrait;
+//     margin: 0;
+//   }
+
+//   html,
+//   body {
+//     margin: 0 !important;
+//     padding: 0 !important;
+//     background: #ffffff !important;
+//   }
+
+//   .d-print-none {
+//     display: none !important;
+//   }
+
+
+//   .ticket-card {
+//     border: 1px solid #999 !important;
+//     box-shadow: none !important;
+//     -webkit-print-color-adjust: exact;
+//     print-color-adjust: exact;
+//   }
+
+//   .paper-section-bg {
+//     -webkit-print-color-adjust: exact;
+//     print-color-adjust: exact;
+//   }
+// }
+
+
 .ticket-page {
   font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-  background-color: #f4f6f8; /* পেজের বাইরের অংশ */
+  background-color: #f4f6f8;
 
-  .fs-7 {
-    font-size: 0.75rem;
-  }
+  .fs-7 { font-size: 0.75rem; }
+  .fs-8 { font-size: 0.65rem; }
+  .tracking-wide { letter-spacing: 1.5px; }
 
-  .fs-8 {
-    font-size: 0.65rem;
-  }
-
-  .tracking-wide {
-    letter-spacing: 1.5px;
-  }
-
-  /* 🎟️ টিকিটের কাগজের কালার (TICKET PAPER COLOR) */
+  /* 🎟️ TICKET PAPER COLOR */
   .ticket-card {
-    /* অপশন ১: প্রফেশনাল ক্লাসিক ক্রিম/হালকা হলুদ পেপার কালার */
     background-color: #fdfbf7 !important; 
     border: 1px solid #e2dbce !important;
-
-    /* অপশন ২: যদি হালকা নীল পেপার পছন্দ হয়, তবে ওপরের ২ লাইন কমেন্ট করে নিচের ২ লাইন ব্যবহার করুন */
-    // background-color: #f0f6ff !important;
-    // border: 1px solid #cce0ff !important;
   }
 
-  /* হাইলাইট বক্সের কালার (Paper Inner Section) */
+  /* Paper Inner Section */
   .paper-section-bg {
-    background-color: #f5efe6 !important; /* কালার স্কিমের সাথে মেলানো হালকা শেড */
-    // background-color: #e3eeef !important; /* হালকা নীল টিকিটের জন্য */
+    background-color: #f5efe6 !important; 
   }
 
-  /* বারকোড সিমুলেশন */
   .barcode-stub {
     background: repeating-linear-gradient(
       90deg,
@@ -43,24 +107,12 @@
   }
 }
 
-/* ==========================================
-   PRINT MEDIA RULES (প্রিন্ট করার সময়ের কালার)
-   ========================================== */
+/* Local overrides to prevent hidden parent container issues */
 @media print {
-  .d-print-none {
-    display: none !important;
-  }
-
-  /* প্রিন্ট হওয়ার সময়ে কাগজের রিয়েল কালার বজায় রাখার নিয়ম */
-  .ticket-card {
-    border: 1px solid #999 !important;
-    box-shadow: none !important;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-
-  .paper-section-bg {
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
+  .ticket-page, 
+  .ticket-wrapper {
+    padding: 0 !important;
+    margin: 0 !important;
+    background: none !important;
   }
 }

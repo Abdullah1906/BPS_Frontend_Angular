@@ -3,7 +3,7 @@
     <div class="ticket-wrapper mx-auto" style="max-width: 750px;">
       
       <!-- MAIN TICKET PAPER CARD -->
-      <div class="ticket-card rounded-3 shadow-sm p-4">
+      <div id="print-ticket" class="ticket-card rounded-3 shadow-sm p-4">
         
         <!-- HEADER -->
         <div class="d-flex justify-content-between align-items-center pb-3 border-bottom border-secondary-subtle">
@@ -13,7 +13,7 @@
           </div>
           <div class="text-end">
             <span class="badge bg-dark text-white px-3 py-2 fs-6 fw-bold">
-              {{ ticket.bookingStatus }}
+              {{ getBookingStatusName(ticket.bookingStatus) }}
             </span>
           </div>
         </div>
@@ -51,6 +51,32 @@
           <table class="table table-bordered align-middle mb-0 border-secondary-subtle">
             <thead class="paper-section-bg">
               <tr class="fs-7 text-uppercase text-dark">
+                <th style="width: 25%;">Seat(s)</th>
+                <th>Passenger Name</th>
+                <th>Phone Number</th>
+                <th class="text-end" style="width: 25%;">Total Fare</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (passenger of groupedPassengers; track $index) {
+                <tr>
+                  <td class="fw-bold text-center paper-section-bg fs-6 text-dark">
+                    {{ passenger.seatNumbers }}
+                  </td>
+                  <td class="fw-semibold text-dark">{{ passenger.passengerName.length > 20 ? (passenger.passengerName | slice:0:20) + '...' : passenger.passengerName }}</td>
+                  <td class="text-secondary">{{ passenger.passengerPhone }}</td>
+                  <td class="text-end fw-bold text-dark">৳{{ passenger.totalFare | number:'1.2-2' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <!-- <div class="mb-4">
+          <h6 class="fw-bold text-uppercase text-muted mb-2 fs-7">Passenger & Seat Details</h6>
+          <table class="table table-bordered align-middle mb-0 border-secondary-subtle">
+            <thead class="paper-section-bg">
+              <tr class="fs-7 text-uppercase text-dark">
                 <th style="width: 15%;">Seat</th>
                 <th>Passenger Name</th>
                 <th>Phone Number</th>
@@ -68,7 +94,7 @@
               }
             </tbody>
           </table>
-        </div>
+        </div> -->
 
         <!-- PAYMENT SUMMARY -->
         <div class="row g-3 align-items-center pt-2 border-top border-secondary-subtle">
