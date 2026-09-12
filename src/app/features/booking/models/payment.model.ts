@@ -1,6 +1,6 @@
-import { PassengerDto } from '../models/booking.model';
+import { ConfirmBookingResponseDto, PassengerDto } from '../models/booking.model';
 
 export interface BookingPaymentState {
-  tripId: number;
+  ConfirmBookingResponse: ConfirmBookingResponseDto;
   passengers: PassengerDto[];
 }

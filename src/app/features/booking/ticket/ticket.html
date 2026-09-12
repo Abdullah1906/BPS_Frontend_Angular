@@ -9,7 +9,7 @@
         <div class="d-flex justify-content-between align-items-center pb-3 border-bottom border-secondary-subtle">
           <div>
             <h3 class="fw-bold text-dark mb-0 tracking-wide">BUS TICKET</h3>
-            <span class="text-secondary small fw-semibold">Bus Position Solution (BPS)</span>
+            <span class="text-secondary small fw-semibold">{{ busName() }}</span>
           </div>
           <div class="text-end">
             <span class="badge bg-dark text-white px-3 py-2 fs-6 fw-bold">
@@ -26,7 +26,7 @@
           </div>
           <div class="col-6 text-end">
             <small class="text-muted d-block text-uppercase fw-bold fs-7">Journey Date</small>
-            <span class="fs-5 fw-bold text-dark">{{ ticket.journeyDate | date:'mediumDate' }}</span>
+            <span class="fs-5 fw-bold text-dark">{{ ticket.tripDate | date:'mediumDate' }}</span>
           </div>
         </div>
 
@@ -99,7 +99,7 @@
         <!-- PAYMENT SUMMARY -->
         <div class="row g-3 align-items-center pt-2 border-top border-secondary-subtle">
           <div class="col-6">
-            <p class="mb-1 text-dark"><strong>Payment Status:</strong> <span class="text-success fw-bold">{{ ticket.paymentStatus }}</span></p>
+            <p class="mb-1 text-dark"><strong>Payment Status:</strong> <span class="text-success fw-bold">{{ getPaymentStatusName(ticket.paymentStatus) }}</span></p>
             <p class="mb-0 text-dark"><strong>Payment Method:</strong> <span class="text-secondary fw-semibold">{{ ticket.paymentMethod }}</span></p>
           </div>
           <div class="col-6 text-end">

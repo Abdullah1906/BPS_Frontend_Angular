@@ -110,16 +110,11 @@ export class TripSearchComponent {
 
   selectTrip(trip: TripSearchResponse): void {
     console.log('Selected Trip:', trip);
+    console.log('Selected Bus Name:', trip.busName);
 
     if (trip && trip.tripId) {
 
-      this.bookingState.setJourneyDetails(
-      trip.fromPlace,
-      trip.toPlace,   
-      trip.tripDate  
-    );
-
-
+      this.bookingState.setBusName(trip.busName);
       this.bookingState.setTripFare(trip.fare);
       this.bookingState.setDiscount((trip as any).discount ?? 0);
 

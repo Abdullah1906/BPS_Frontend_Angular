@@ -64,6 +64,10 @@ export interface ConfirmBookingResponseDto {
   createdAt: string;
   confirmedAt?: string;
 
+  fromPlaceName :string;
+  toPlaceName :string;
+  tripDate :Date;
+
   passengers: ConfirmedPassengerDto[];
 }
 

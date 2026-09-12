@@ -48,6 +48,7 @@ export class Payment {
   readonly netTotal = computed(() => {
     return Math.max(0, this.totalAmount() - this.totalDiscount());
   });
+
   getSeatNumber(tripSeatId: number): string {
     const seat = this.lockedSeats().find(x => x.tripSeatId === tripSeatId);
     return seat?.seatNumber ?? '-';
@@ -70,7 +71,10 @@ export class Payment {
       passengers
     }).subscribe({
       next: (response) => {
+        console.log('--- Confirm Booking API Response ---', response);
+        console.dir(response);
         this.isSubmitting = false;
+        this.bookingState.setConfirmedBooking(response);
         this.router.navigate(
           ['/booking/ticket'],
           {

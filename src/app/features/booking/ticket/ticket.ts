@@ -1,7 +1,8 @@
 import {
   Component,
   inject,
-  OnInit
+  OnInit,
+  computed
 } from '@angular/core';
 
 import { CommonModule } from '@angular/common';
@@ -10,12 +11,7 @@ import { Router } from '@angular/router';
 import { ConfirmBookingResponseDto } from '../models/booking.model';
 import { BookingStateService } from '../../../features/booking/services/booking-state.service';
 import { BookingStatus } from '../models/booking-status.enum';
-
-export interface TicketViewData extends ConfirmBookingResponseDto {
-  fromPlaceName?: string;
-  toPlaceName?: string;
-  journeyDate?: string;
-}
+import { PaymentStatus } from '../models/payment-status.enum';
 
 export interface GroupedPassenger {
   seatNumbers: string;
@@ -23,7 +19,7 @@ export interface GroupedPassenger {
   passengerPhone: string;
   totalFare: number;
 }
-
+export type TicketViewData = ConfirmBookingResponseDto;
 @Component({
   selector: 'app-ticket',
   standalone: true,
@@ -34,13 +30,18 @@ export interface GroupedPassenger {
 export class Ticket implements OnInit {
 
   private readonly router = inject(Router);
-  private readonly bookingState =
-    inject(BookingStateService);
+  private readonly bookingState = inject(BookingStateService);
 
   booking: TicketViewData | null = null;
 
   private confirmedBookingFromNav: ConfirmBookingResponseDto | null = null;
+  readonly ticket = this.bookingState.confirmedBooking;
+  readonly busName = computed(() => this.bookingState.busName());
+ 
+
   BookingStatus = BookingStatus;
+  PaymentStatus = PaymentStatus;
+
   constructor() {
     
     const navigation = this.router.getCurrentNavigation();
@@ -60,21 +61,33 @@ export class Ticket implements OnInit {
         default:
           return 'Unknown';
       }
-    }
+  }
+
+   getPaymentStatusName(status: PaymentStatus | number | undefined): string {
+      if (status === undefined || status === null) return 'N/A';
+      
+      switch (Number(status)) {
+        case PaymentStatus.Pending:
+          return 'Pending';
+        case PaymentStatus.Paid:
+          return 'Paid';
+        case PaymentStatus.Failed:
+          return 'Failed';
+        default:
+          return 'Unknown';
+      }
+  }
 
   ngOnInit(): void {
     const confirmedBooking = this.confirmedBookingFromNav;
 
     if (confirmedBooking) {
-      const journey = this.bookingState.getJourneyDetails();
-
-      this.booking = {
-        ...confirmedBooking,
-        fromPlaceName: journey?.fromPlaceName || 'N/A',
-        toPlaceName: journey?.toPlaceName || 'N/A',
-        journeyDate: journey?.journeyDate || 'N/A'
-      };
+      this.booking = confirmedBooking;
     }
+
+    console.log('--- Ticket Component Bus Name Check ---');
+  console.log('From Signal:', this.busName());
+  console.log('From SessionStorage:', sessionStorage.getItem('bus_name'));
   }
 
   printTicket(): void {
