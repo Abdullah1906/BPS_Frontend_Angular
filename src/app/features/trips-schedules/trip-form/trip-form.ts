@@ -325,7 +325,7 @@ export class TripScheduleForm implements OnInit {
           this.errorMessage.set(
             error?.error?.detail ??
             error?.error?.message ??
-            'Failed to create trip schedule.'
+            'Failed to create trip schedule due to a conflict.'
           );
         }
       });
