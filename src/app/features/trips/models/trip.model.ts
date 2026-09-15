@@ -10,7 +10,7 @@ export interface Trip {
 }
 
 export interface CreateTripRequest {
-  placeId: number;
+  placeIds: number[];
   tripDate: string;
   tipStatus: boolean;
   tipAmount: number;

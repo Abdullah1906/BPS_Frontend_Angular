@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { TripService } from '../services/trip';
 import { PlaceService } from '../../places/services/place';
 import { Place } from '../../places/models/place.model';
+import { CreateTripRequest, UpdateTripRequest } from '../models/trip.model';
 
 @Component({
   selector: 'app-trip-form',
@@ -19,7 +20,7 @@ export class TripForm implements OnInit {
   private readonly placeService = inject(PlaceService);
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
-
+  placeDropdownOpen = false;
   loading = false;
   errorMessage = '';
   successMessage = '';
@@ -29,13 +30,19 @@ export class TripForm implements OnInit {
 
   places = signal<Place[]>([]);
 
+
   tripForm = this.fb.nonNullable.group({
-    placeId: [0, [Validators.required, Validators.min(1)]],
-    tripDate: ['', [Validators.required]],
+    placeIds: this.fb.nonNullable.control<number[]>([], [
+      Validators.required,
+      Validators.minLength(1)
+    ]),
+
+    tripDate: ['', Validators.required],
+
     tipStatus: [false],
+
     tipAmount: [0]
   });
-
   ngOnInit(): void {
     this.loadPlaces();
 
@@ -61,7 +68,7 @@ export class TripForm implements OnInit {
     this.tripService.getById(id).subscribe({
       next: (trip) => {
         this.tripForm.patchValue({
-          placeId: trip.placeId,
+          placeIds: [trip.placeId],
           tripDate: trip.tripDate.substring(0, 10),
           tipStatus: trip.tipStatus,
           tipAmount: trip.tipAmount
@@ -76,7 +83,9 @@ export class TripForm implements OnInit {
     });
   }
 
+
   submit(): void {
+
     if (this.tripForm.invalid) {
       this.tripForm.markAllAsTouched();
       return;
@@ -88,42 +97,170 @@ export class TripForm implements OnInit {
 
     const formValue = this.tripForm.getRawValue();
 
+  
     if (this.isEditMode() && this.tripId !== null) {
 
-      this.tripService.update(this.tripId, formValue).subscribe({
+      const updateRequest: UpdateTripRequest = {
+        placeId: formValue.placeIds[0],
+        tripDate: formValue.tripDate,
+        tipStatus: formValue.tipStatus,
+        tipAmount: formValue.tipStatus
+          ? formValue.tipAmount
+          : 0
+      };
+
+      this.tripService.update(
+        this.tripId,
+        updateRequest
+      ).subscribe({
+
         next: () => {
           this.loading = false;
           this.successMessage = 'Trip updated successfully.';
-          setTimeout(() => this.router.navigate(['/trips']), 500);
+
+          setTimeout(() => {
+            this.router.navigate(['/trips']);
+          }, 500);
         },
+
         error: (error) => {
           this.loading = false;
+
           console.error('Update trip error:', error);
-          this.errorMessage = error?.error?.message ?? 'Unable to update trip.';
+
+          this.errorMessage =
+            error?.error?.message ??
+            'Unable to update trip.';
         }
+
       });
+
+      return;
+    }
+
+
+    const createRequest: CreateTripRequest = {
+      placeIds: formValue.placeIds,
+      tripDate: formValue.tripDate,
+      tipStatus: formValue.tipStatus,
+      tipAmount: formValue.tipStatus
+        ? formValue.tipAmount
+        : 0
+    };
+
+    this.tripService.create(createRequest).subscribe({
+
+      next: () => {
+        this.loading = false;
+        this.successMessage = 'Trips created successfully.';
+
+        setTimeout(() => {
+          this.router.navigate(['/trips']);
+        }, 500);
+      },
+
+      error: (error) => {
+        this.loading = false;
+
+        console.error('Create trip error:', error);
+
+        this.errorMessage =
+          error?.error?.message ??
+          'Unable to create trips.';
+      }
+
+    });
+  }
+
+
+  get selectedPlaceCount(): number {
+    return this.tripForm.controls.placeIds.value.length;
+  }
+
+
+  togglePlaceDropdown(): void {
+    this.placeDropdownOpen = !this.placeDropdownOpen;
+  }
+
+
+  isAllPlacesSelected(): boolean {
+
+    const selectedIds = this.tripForm.controls.placeIds.value;
+    const places = this.places();
+
+    return places.length > 0 &&
+          selectedIds.length === places.length;
+  }
+
+
+  isSomePlacesSelected(): boolean {
+
+    const selectedIds = this.tripForm.controls.placeIds.value;
+    const places = this.places();
+
+    return selectedIds.length > 0 &&
+          selectedIds.length < places.length;
+  }
+
+
+  toggleSelectAll(event: Event): void {
+
+    const checkbox = event.target as HTMLInputElement;
+
+    if (checkbox.checked) {
+
+      const allPlaceIds = this.places().map(
+        place => place.id
+      );
+
+      this.tripForm.controls.placeIds.setValue(
+        allPlaceIds
+      );
 
     } else {
 
-      this.tripService.create(formValue).subscribe({
-        next: () => {
-          this.loading = false;
-          this.successMessage = 'Trip created successfully.';
-          setTimeout(() => this.router.navigate(['/trips']), 500);
-        },
-        error: (error) => {
-          this.loading = false;
-          console.error('Create trip error:', error);
-          this.errorMessage = error?.error?.message ?? 'Unable to create trip.';
-        }
-      });
+      this.tripForm.controls.placeIds.setValue([]);
 
     }
+
+    this.tripForm.controls.placeIds.markAsTouched();
   }
+
+
+  togglePlace(placeId: number, event: Event): void {
+
+    const checkbox = event.target as HTMLInputElement;
+
+    const currentIds = this.tripForm.controls.placeIds.value;
+
+    if (checkbox.checked) {
+
+      if (!currentIds.includes(placeId)) {
+
+        this.tripForm.controls.placeIds.setValue([
+          ...currentIds,
+          placeId
+        ]);
+
+      }
+
+    } else {
+
+      this.tripForm.controls.placeIds.setValue(
+        currentIds.filter(id => id !== placeId)
+      );
+
+    }
+
+    this.tripForm.controls.placeIds.markAsTouched();
+  }
+
+
+
 
   clear(): void {
     this.tripForm.reset({
-      placeId: 0,
+      placeIds: [],
       tripDate: '',
       tipStatus: false,
       tipAmount: 0

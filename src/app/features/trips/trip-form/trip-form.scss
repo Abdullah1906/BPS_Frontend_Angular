@@ -1,0 +1,46 @@
+
+.place-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 1050;
+
+  background: #fff;
+  border: 1px solid #dee2e6;
+  border-radius: 0.5rem;
+
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.place-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 9px 12px;
+
+  cursor: pointer;
+
+  transition: background-color 0.15s ease;
+}
+
+.place-option:hover {
+  background-color: #f8f9fa;
+}
+
+.place-option .form-check-input {
+  width: 17px;
+  height: 17px;
+  cursor: pointer;
+}
+
+.select-all-option {
+  background-color: #f8f9fa;
+}
+
+.dropdown-divider {
+  border-top: 1px solid #dee2e6;
+}
+

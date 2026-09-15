@@ -21,16 +21,118 @@
       <form [formGroup]="tripForm" (ngSubmit)="submit()">
 
         <div class="mb-3">
-          <label for="placeId" class="form-label fw-semibold small">
-            Place <span class="text-danger">*</span>
+
+          <label class="form-label fw-semibold small">
+            Places <span class="text-danger">*</span>
           </label>
-          <select id="placeId" class="form-select" formControlName="placeId">
-            <option [value]="0" disabled>Select a place</option>
-            @for (place of places(); track place.id) {
-              <option [value]="place.id">{{ place.placeName }} (৳{{ place.pricePerTrip }})</option>
+          
+          <div class="position-relative">
+
+            <button
+              type="button"
+              class="form-select text-start"
+              (click)="togglePlaceDropdown()">
+
+              @if (selectedPlaceCount === 0) {
+                <span class="text-muted">
+                  Select places
+                </span>
+              } @else if (selectedPlaceCount === places().length) {
+                <span>
+                  All places selected
+                </span>
+              } @else {
+                <span>
+                  {{ selectedPlaceCount }} place(s) selected
+                </span>
+              }
+
+            </button>
+
+           
+            @if (placeDropdownOpen) {
+
+              <div class="place-dropdown shadow-sm">
+
+                
+                <label class="place-option select-all-option">
+
+                  <div class="d-flex align-items-center gap-2">
+
+                    <input
+                      type="checkbox"
+                      class="form-check-input m-0"
+                      [checked]="isAllPlacesSelected()"
+                      [indeterminate]="isSomePlacesSelected()"
+                      (change)="toggleSelectAll($event)"
+                    />
+
+                    <span class="small fw-semibold">
+                      Select All
+                    </span>
+
+                  </div>
+
+                </label>
+
+
+                <div class="dropdown-divider my-1"></div>
+
+
+              
+                @for (place of places(); track place.id) {
+
+                  <label class="place-option">
+
+                    <div class="d-flex align-items-center gap-2">
+
+                      <input
+                        type="checkbox"
+                        class="form-check-input m-0"
+                        [checked]="
+                          tripForm.controls.placeIds.value.includes(place.id)
+                        "
+                        (change)="togglePlace(place.id, $event)"
+                      />
+
+                      <span class="small">
+                        {{ place.placeName }}
+                      </span>
+
+                    </div>
+
+                    <span class="text-muted small">
+                      ৳{{ place.pricePerTrip }}
+                    </span>
+
+                  </label>
+
+                }
+
+              </div>
+
             }
-          </select>
+
+          </div>
+
+
+         
+          @if (
+            tripForm.controls.placeIds.touched &&
+            tripForm.controls.placeIds.invalid
+          ) {
+            <div class="text-danger small mt-1">
+              Please select at least one place.
+            </div>
+          }
+
+          <div class="form-text">
+            Select one or multiple places.
+          </div>
+
         </div>
+
+
 
         <div class="mb-3">
           <label for="tripDate" class="form-label fw-semibold small">
