@@ -56,7 +56,7 @@ export class TripForm implements OnInit {
   }
 
   loadPlaces(): void {
-    this.placeService.getAll().subscribe({
+    this.placeService.getAllByActive().subscribe({
       next: (data) => this.places.set(data),
       error: (error) => console.error('Load places error:', error)
     });

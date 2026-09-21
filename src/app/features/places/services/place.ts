@@ -40,6 +40,13 @@ export class PlaceService {
     );
   }
 
+  getAllByActive(): Observable<Place[]> {
+
+    return this.http.get<Place[]>(
+      `${this.apiUrl}/getallbyactive`
+    );
+  }
+
 
   // GET BY ID
   getById(

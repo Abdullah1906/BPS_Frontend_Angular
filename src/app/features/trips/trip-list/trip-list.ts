@@ -1,8 +1,14 @@
-import { Component, inject,computed, signal, OnInit } from '@angular/core';
+import { Component, inject,computed, signal, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { TripService } from '../services/trip';
-import { Trip } from '../models/trip.model';
+import { Trip , TripPagedResponse} from '../models/trip.model';
 import { DatePipe } from '@angular/common';
+import {
+  Subject,
+  debounceTime,
+  distinctUntilChanged,
+  takeUntil
+} from 'rxjs';
 
 @Component({
   selector: 'app-trip-list',
@@ -11,7 +17,7 @@ import { DatePipe } from '@angular/common';
   templateUrl: './trip-list.html',
   styleUrl: './trip-list.scss'
 })
-export class TripList implements OnInit {
+export class TripList implements OnInit, OnDestroy {
 
   private readonly tripService = inject(TripService);
   private readonly router = inject(Router);
@@ -21,58 +27,177 @@ export class TripList implements OnInit {
   errorMessage = '';
 
 
+  searchTerm = signal('');
+
+  //protected readonly Math = Math;
+  private readonly searchSubject =
+    new Subject<string>();
+
+  private readonly destroy$ =
+    new Subject<void>();
+
+
   // ✅ Pagination signals
+
   currentPage = signal(1);
+
   itemsPerPage = signal(10);
 
-  // ✅ Paginated trips
-  totalPages = computed(() => Math.ceil(this.trips().length / this.itemsPerPage()));
+  totalCount = signal(0);
 
-  paginatedTrips = computed(() => {
-    const start = (this.currentPage() - 1) * this.itemsPerPage();
-    const end = start + this.itemsPerPage();
-    return this.trips().slice(start, end);
-  });
+  totalPages = signal(0);
 
   ngOnInit(): void {
+    this.setupSearch();
     this.loadTrips();
   }
 
+  private setupSearch(): void {
+
+    this.searchSubject
+      .pipe(
+        debounceTime(400),
+        distinctUntilChanged(),
+        takeUntil(this.destroy$)
+      )
+      .subscribe(search => {
+
+        this.searchTerm.set(search);
+
+        this.currentPage.set(1);
+
+        this.loadTrips();
+      });
+  }
+
+
   loadTrips(): void {
+
     this.loading = true;
 
-    this.tripService.getAll().subscribe({
-      next: (data) => {
-        this.trips.set(data);
-        this.loading = false;
-      },
-      error: (error) => {
-        console.error('Load trips error:', error);
-        this.errorMessage = 'Unable to load trips.';
-        this.loading = false;
-      }
-    });
+    this.errorMessage = '';
+
+
+    this.tripService
+      .getPaged(
+        this.searchTerm(),
+        this.currentPage(),
+        this.itemsPerPage()
+      )
+      .subscribe({
+
+        next: (
+          response: TripPagedResponse
+        ) => {
+
+          this.trips.set(
+            response.items
+          );
+
+          this.totalCount.set(
+            response.totalCount
+          );
+
+          this.totalPages.set(
+            response.totalPages
+          );
+
+          this.loading = false;
+        },
+
+        error: (error) => {
+
+          console.error(
+            'Load trips error:',
+            error
+          );
+
+          this.errorMessage =
+            'Unable to load trips.';
+
+          this.loading = false;
+        }
+      });
+  }
+
+   onSearch(event: Event): void {
+
+    const input =
+      event.target as HTMLInputElement;
+
+    this.searchSubject.next(
+      input.value
+    );
   }
 
 
    // ✅ Pagination controls
   goToPage(page: number): void {
-    if (page >= 1 && page <= this.totalPages()) {
-      this.currentPage.set(page);
+
+    if (
+      page < 1 ||
+      page > this.totalPages()
+    ) {
+      return;
     }
+
+    this.currentPage.set(page);
+
+    this.loadTrips();
   }
+
 
   nextPage(): void {
-    if (this.currentPage() < this.totalPages()) {
-      this.currentPage.update(p => p + 1);
+
+    if (
+      this.currentPage() <
+      this.totalPages()
+    ) {
+
+      this.currentPage.update(
+        page => page + 1
+      );
+
+      this.loadTrips();
     }
   }
 
+
   prevPage(): void {
-    if (this.currentPage() > 1) {
-      this.currentPage.update(p => p - 1);
+
+    if (
+      this.currentPage() > 1
+    ) {
+
+      this.currentPage.update(
+        page => page - 1
+      );
+
+      this.loadTrips();
     }
   }
+
+
+  // ============================
+  // Page Size
+  // ============================
+
+  changeItemsPerPage(
+    event: Event
+  ): void {
+
+    const select =
+      event.target as HTMLSelectElement;
+
+    this.itemsPerPage.set(
+      Number(select.value)
+    );
+
+    this.currentPage.set(1);
+
+    this.loadTrips();
+  }
+
 
   create(): void {
     this.router.navigate(['/trips/create']);
@@ -90,11 +215,60 @@ export class TripList implements OnInit {
     }
 
     this.tripService.delete(id).subscribe({
-      next: () => this.loadTrips(),
+      next: () => {
+
+          if (
+            this.trips().length === 1 &&
+            this.currentPage() > 1
+          ) {
+
+            this.currentPage.update(
+              page => page - 1
+            );
+          }
+
+          this.loadTrips();
+        },
       error: (error) => {
         console.error('Delete trip error:', error);
         this.errorMessage = 'Unable to delete trip.';
       }
     });
+  }
+
+
+  get currentFrom(): number {
+    if (this.totalCount() === 0) {
+      return 0;
+    }
+
+    return (
+      (this.currentPage() - 1)
+      * this.itemsPerPage()
+    ) + 1;
+  }
+
+  get currentTo(): number {
+    return Math.min(
+      this.currentPage() * this.itemsPerPage(),
+      this.totalCount()
+    );
+  }
+
+  ngOnDestroy(): void {
+
+    this.destroy$.next();
+
+    this.destroy$.complete();
+
+    this.searchSubject.complete();
+  }
+  clearSearch(): void {
+
+    this.searchTerm.set('');
+
+    this.currentPage.set(1);
+
+    this.loadTrips();
   }
 }

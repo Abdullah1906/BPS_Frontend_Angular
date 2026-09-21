@@ -1,8 +1,8 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient,HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environments';
-import { Trip, CreateTripRequest, UpdateTripRequest } from '../models/trip.model';
+import { Trip, CreateTripRequest, UpdateTripRequest,TripPagedResponse } from '../models/trip.model';
 
 @Injectable({
   providedIn: 'root'
@@ -12,8 +12,35 @@ export class TripService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiUrl}/Trips`;
 
-  getAll(): Observable<Trip[]> {
-    return this.http.get<Trip[]>(`${this.apiUrl}/getall`);
+  // getAll(): Observable<Trip[]> {
+  //   return this.http.get<Trip[]>(`${this.apiUrl}/getall`);
+  // }
+
+
+  getPaged(
+    search: string,
+    page: number,
+    pageSize: number
+  ): Observable<TripPagedResponse> {
+
+    let params =
+      new HttpParams()
+        .set('page', page)
+        .set('pageSize', pageSize);
+
+    if (search.trim()) {
+
+      params =
+        params.set(
+          'search',
+          search.trim()
+        );
+    }
+
+    return this.http.get<TripPagedResponse>(
+      `${this.apiUrl}/getpaged`,
+      { params }
+    );
   }
 
   getById(id: number): Observable<Trip> {

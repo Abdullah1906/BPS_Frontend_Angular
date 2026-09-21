@@ -22,3 +22,16 @@ export interface UpdateTripRequest {
   tipStatus: boolean;
   tipAmount: number;
 }
+
+export interface TripPagedResponse {
+
+  items: Trip[];
+
+  page: number;
+
+  pageSize: number;
+
+  totalCount: number;
+
+  totalPages: number;
+}
