@@ -13,13 +13,22 @@ import { Router } from '@angular/router';
 
 import { AuthService } from '../../../core/services/auth';
 
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+
 
 @Component({
   selector: 'app-login',
   standalone: true,
 
   imports: [
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    MatFormFieldModule, 
+    MatInputModule, 
+    MatIconModule, 
+    MatButtonModule
   ],
 
   templateUrl: './login.html',
@@ -27,6 +36,7 @@ import { AuthService } from '../../../core/services/auth';
 })
 export class Login {
 
+  hide = true;
   private readonly fb =
     inject(FormBuilder);
 

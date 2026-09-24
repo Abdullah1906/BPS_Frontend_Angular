@@ -66,3 +66,17 @@ button {
     background-color: #303f9f;
   }
 }
+
+.custom-eye-btn {
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+
+  mat-icon {
+    color: #000000 !important;
+  }
+}
