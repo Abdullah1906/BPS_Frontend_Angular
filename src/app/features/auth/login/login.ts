@@ -58,7 +58,8 @@ export class Login {
       username: [
         '',
         [
-          Validators.required
+          Validators.required,
+          Validators.maxLength(50)
         ]
       ],
 
@@ -66,7 +67,8 @@ export class Login {
         '',
         [
           Validators.required,
-          Validators.minLength(6)
+          Validators.minLength(6),
+          Validators.maxLength(20)
         ]
       ]
 
@@ -118,6 +120,7 @@ export class Login {
 
           this.errorMessage =
             error?.error?.message ??
+            error?.error?.title ??
             'Invalid username or password.';
 
         }
@@ -125,4 +128,37 @@ export class Login {
       });
 
   }
+
+  getPasswordError(): string {
+    const control = this.loginForm.controls.password;
+
+    if (control.hasError('required')) {
+      return 'Password is required';
+    }
+
+    if (control.hasError('minlength')) {
+      return 'Password must be at least 6 characters';
+    }
+
+    if (control.hasError('maxlength')) {
+      return 'Password cannot exceed 20 characters';
+    }
+
+    return '';
+  }
+  getUserNameError(): string {
+    const control = this.loginForm.controls.username;
+
+    if (control.hasError('required')) {
+      return 'Username is required';
+    }
+
+    if (control.hasError('maxlength')) {
+      return 'Username cannot exceed 20 characters';
+    }
+
+    return '';
+  }
+
+    
 }

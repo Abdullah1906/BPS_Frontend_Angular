@@ -1,26 +1,139 @@
-<form [formGroup]="loginForm" (ngSubmit)="submit()">
+<div class="login-page">
 
-  <mat-form-field appearance="outline" class="full-width">
-    <mat-label>Username</mat-label>
-    <input matInput formControlName="username" placeholder="Enter username">
-  </mat-form-field>
+  <div class="login-card">
 
-  <mat-form-field appearance="outline" class="full-width">
-    <mat-label>Password</mat-label>
 
-    <input matInput [type]="hide ? 'password' : 'text'" formControlName="password" placeholder="Enter password">
+    <!-- Brand -->
+    <div class="brand">
+      <div class="brand-logo">
+        <mat-icon>directions_bus</mat-icon>
+      </div>
 
-    <button matSuffix type="button" (click)="hide = !hide" class="custom-eye-btn">
-      <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
-    </button>
-  </mat-form-field>
+      <div class="brand-text">
+        <h1>BPS</h1>
+        <span>Bus Position Solution</span>
+      </div>
+    </div>
 
-  @if (errorMessage) {
-    <p class="error">{{ errorMessage }}</p>
-  }
+    <!-- Header -->
+    <div class="login-header">
+      <h2>Welcome back</h2>
+      <p>Sign in to your account to continue</p>
+    </div>
 
-  <button type="submit" [disabled]="loading">
-    {{ loading ? 'Logging in...' : 'Login' }}
-  </button>
+    <!-- Login Form -->
+    <form [formGroup]="loginForm" (ngSubmit)="submit()">
 
-</form>
+      <!-- Username -->
+      <mat-form-field appearance="outline" class="full-width">
+
+        <mat-label>Username</mat-label>
+
+        <mat-icon matPrefix>person_outline</mat-icon>
+
+        <input
+          matInput
+          formControlName="username"
+          placeholder="Enter your username"
+          autocomplete="username"
+          maxlength="20"
+        />
+
+
+         @if (loginForm.controls.username.touched && loginForm.controls.username.invalid) {
+          <mat-error>
+            {{ getUserNameError() }}
+          </mat-error>
+        }
+
+         @if (loginForm.controls.password.touched && loginForm.controls.password.invalid) {
+          <mat-error>
+            {{ getPasswordError() }}
+          </mat-error>
+        }
+
+      </mat-form-field>
+
+
+      <!-- Password -->
+      <mat-form-field appearance="outline" class="full-width">
+
+        <mat-label>Password</mat-label>
+
+        <mat-icon matPrefix>lock_outline</mat-icon>
+
+        <input
+          matInput
+          [type]="hide ? 'password' : 'text'"
+          formControlName="password"
+          placeholder="Enter your password"
+          autocomplete="current-password"
+          maxlength="20"
+        />
+        
+        <button
+          mat-icon-button
+          matSuffix
+          type="button"
+          class="password-toggle"
+          (click)="hide = !hide"
+          [attr.aria-label]="hide ? 'Show password' : 'Hide password'"
+        >
+          <mat-icon>
+            {{ hide ? 'visibility_off' : 'visibility' }}
+          </mat-icon>
+        </button>
+
+        @if (loginForm.controls.password.touched && loginForm.controls.password.invalid) {
+          <mat-error>
+            {{ getPasswordError() }}
+          </mat-error>
+        }
+
+      </mat-form-field>
+
+
+      <!-- Error -->
+      @if (errorMessage) {
+        <div class="error-message">
+          <mat-icon>error_outline</mat-icon>
+          <span>{{ errorMessage }}</span>
+        </div>
+      }
+
+
+      <!-- Login Button -->
+      <button
+        mat-flat-button
+        type="submit"
+        class="login-button"
+        [disabled]="loading"
+      >
+
+        @if (loading) {
+          <span class="button-content">
+            <span class="spinner"></span>
+            Signing in...
+          </span>
+        } @else {
+          <span class="button-content">
+            Sign in
+            <mat-icon>arrow_forward</mat-icon>
+          </span>
+        }
+
+      </button>
+
+    </form>
+
+    <!-- Footer -->
+    <div class="login-footer">
+      <span>© 2026 BPS</span>
+      <span class="separator">•</span>
+      <span>Bus Position Solution</span>
+    </div>
+
+
+  </div>
+
+</div>
