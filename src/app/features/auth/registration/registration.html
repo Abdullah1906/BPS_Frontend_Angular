@@ -1,0 +1,304 @@
+<div class="register-page">
+
+  <div class="register-card">
+
+    <div class="register-header">
+
+      <div class="logo">
+        BPS
+      </div>
+
+      <h1>Create Account</h1>
+
+      <p>
+        Register your account to continue
+      </p>
+
+    </div>
+
+
+    @if (errorMessage) {
+      <div class="alert error">
+        {{ errorMessage }}
+      </div>
+    }
+
+
+    @if (successMessage) {
+      <div class="alert success">
+        {{ successMessage }}
+      </div>
+    }
+
+
+    <form
+      [formGroup]="registerForm"
+      (ngSubmit)="register()"
+      class="register-form"
+    >
+
+      <!-- Full Name -->
+
+      <mat-form-field appearance="outline">
+        <mat-label>Full Name</mat-label>
+
+        <input
+          matInput
+          type="text"
+          formControlName="fullName"
+          placeholder="Enter your full name"
+          maxlength="150"
+        />
+
+        @if (
+          fullName.touched &&
+          fullName.hasError('required')
+        ) {
+          <mat-error>
+            Full name is required
+          </mat-error>
+        }
+
+        @if (
+          fullName.touched &&
+          fullName.hasError('maxlength')
+        ) {
+          <mat-error>
+            Maximum 150 characters
+          </mat-error>
+        }
+
+      </mat-form-field>
+
+
+      <!-- Username -->
+
+      <mat-form-field appearance="outline">
+        <mat-label>Username</mat-label>
+
+        <input
+          matInput
+          type="text"
+          formControlName="username"
+          placeholder="Enter username"
+          maxlength="100"
+        />
+
+        @if (
+          username.touched &&
+          username.hasError('required')
+        ) {
+          <mat-error>
+            Username is required
+          </mat-error>
+        }
+
+        @if (
+          username.touched &&
+          username.hasError('maxlength')
+        ) {
+          <mat-error>
+            Maximum 100 characters
+          </mat-error>
+        }
+
+      </mat-form-field>
+
+
+      <!-- Email -->
+
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+
+        <input
+          matInput
+          type="email"
+          formControlName="email"
+          placeholder="Enter email address"
+          maxlength="100"
+        />
+
+        @if (
+          email.touched &&
+          email.hasError('required')
+        ) {
+          <mat-error>
+            Email is required
+          </mat-error>
+        }
+
+        @if (
+          email.touched &&
+          email.hasError('email')
+        ) {
+          <mat-error>
+            Enter a valid email address
+          </mat-error>
+        }
+
+      </mat-form-field>
+
+
+      <!-- Phone -->
+
+      <mat-form-field appearance="outline">
+        <mat-label>Phone Number</mat-label>
+
+        <input
+          matInput
+          type="tel"
+          formControlName="phoneNumber"
+          placeholder="017XXXXXXXX"
+          maxlength="11"
+        />
+
+        @if (
+          phoneNumber.touched &&
+          phoneNumber.hasError('required')
+        ) {
+          <mat-error>
+            Phone number is required
+          </mat-error>
+        }
+
+      </mat-form-field>
+
+
+      <!-- Password -->
+
+      <mat-form-field appearance="outline">
+        <mat-label>Password</mat-label>
+
+        <input
+          matInput
+          [type]="hidePassword ? 'password' : 'text'"
+          formControlName="password"
+          placeholder="Enter password"
+          maxlength="20"
+        />
+
+        <button
+          mat-icon-button
+          matSuffix
+          type="button"
+          (click)="hidePassword = !hidePassword"
+        >
+          <mat-icon>
+            {{ hidePassword ? 'visibility' : 'visibility_off' }}
+          </mat-icon>
+        </button>
+
+        @if (
+          password.touched &&
+          password.hasError('required')
+        ) {
+          <mat-error>
+            Password is required
+          </mat-error>
+        }
+
+        @if (
+          password.touched &&
+          password.hasError('minlength')
+        ) {
+          <mat-error>
+            Password must be at least 6 characters
+          </mat-error>
+        }
+
+      </mat-form-field>
+
+
+      <!-- Confirm Password -->
+
+      <mat-form-field appearance="outline">
+        <mat-label>Confirm Password</mat-label>
+
+        <input
+          matInput
+          [type]="
+            hideConfirmPassword
+              ? 'password'
+              : 'text'
+          "
+          formControlName="confirmPassword"
+          placeholder="Confirm password"
+          maxlength="20"
+        />
+
+        <button
+          mat-icon-button
+          matSuffix
+          type="button"
+          (click)="
+            hideConfirmPassword =
+              !hideConfirmPassword
+          "
+        >
+          <mat-icon>
+            {{
+              hideConfirmPassword
+                ? 'visibility'
+                : 'visibility_off'
+            }}
+          </mat-icon>
+        </button>
+
+        @if (
+          confirmPassword.touched &&
+          confirmPassword.hasError('required')
+        ) {
+          <mat-error>
+            Please confirm your password
+          </mat-error>
+        }
+
+        @if (
+          confirmPassword.touched &&
+          confirmPassword.hasError('passwordMismatch')
+        ) {
+          <mat-error>
+            Passwords do not match
+          </mat-error>
+        }
+
+      </mat-form-field>
+
+
+      <!-- Register Button -->
+
+      <button
+        mat-flat-button
+        color="primary"
+        type="submit"
+        class="register-button"
+        [disabled]="isLoading"
+      >
+
+        @if (isLoading) {
+          Creating Account...
+        }
+        @else {
+          Create Account
+        }
+
+      </button>
+
+    </form>
+
+
+    <div class="login-link">
+
+      <span>
+        Already have an account?
+      </span>
+
+      <a routerLink="/auth/login">
+        Login
+      </a>
+
+    </div>
+
+  </div>
+
+</div>

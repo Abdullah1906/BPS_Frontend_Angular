@@ -388,3 +388,39 @@ MOBILE
   }
 
 }
+
+/* ================================
+REGISTER LINK
+================================ */
+
+.register-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 6px;
+
+  margin-top: 20px;
+
+  font-size: 13px;
+}
+
+.register-link span {
+  color: #7b8498;
+}
+
+.register-link a {
+  color: #3f51b5;
+
+  font-weight: 600;
+
+  text-decoration: none;
+
+  transition: color 0.15s ease;
+}
+
+.register-link a:hover {
+  color: #536dfe;
+
+  text-decoration: underline;
+}

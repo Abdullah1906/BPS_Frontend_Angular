@@ -6,7 +6,9 @@ import { environment } from '../../../environments/environments';
 
 import {
   LoginRequest,
-  LoginResponse
+  LoginResponse,
+  RegisterRequest,
+  RegisterResponse
 } from '../models/auth.model';
 
 @Injectable({
@@ -54,6 +56,15 @@ export class AuthService {
       );
   }
 
+  register(
+    request: RegisterRequest
+  ): Observable<RegisterResponse> {
+
+    return this.http.post<RegisterResponse>(
+      `${this.apiUrl}/register`,
+      request
+    );
+  }
 
   logout(): void {
 

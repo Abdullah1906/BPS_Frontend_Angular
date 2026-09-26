@@ -24,6 +24,7 @@ import { SeatMap } from './features/booking/seat-map/seat-map';
 import { Passenger } from './features/booking/passenger/passenger';
 import { Payment } from './features/booking/payment/payment';
 import { Ticket } from './features/booking/ticket/ticket';
+import { RegisterComponent } from './features/auth/registration/registration';
 
 
 export const routes: Routes = [
@@ -37,6 +38,11 @@ export const routes: Routes = [
   {
     path: 'login',
     component: Login
+  },
+  {
+    path: 'auth/register',
+    component: RegisterComponent
+
   },
 
   {

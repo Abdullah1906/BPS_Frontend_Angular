@@ -9,7 +9,7 @@ import {
   Validators
 } from '@angular/forms';
 
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 import { AuthService } from '../../../core/services/auth';
 
@@ -28,7 +28,8 @@ import { MatButtonModule } from '@angular/material/button';
     MatFormFieldModule, 
     MatInputModule, 
     MatIconModule, 
-    MatButtonModule
+    MatButtonModule,
+     RouterLink
   ],
 
   templateUrl: './login.html',
