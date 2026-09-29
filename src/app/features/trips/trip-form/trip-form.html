@@ -159,6 +159,21 @@
               <input id="tipAmount" type="number" class="form-control" formControlName="tipAmount" />
             </div>
           </div>
+
+          <div class="mb-3">
+          <label for="note" class="form-label fw-semibold small">
+            Note
+          </label>
+          <input
+            id="note"
+            type="text"
+            class="form-control"
+            formControlName="note"
+            placeholder="Enter Note(Optional)"
+            maxlength="150"
+          />
+          
+        </div>
         }
 
         @if (errorMessage) {

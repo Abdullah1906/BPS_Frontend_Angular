@@ -7,6 +7,7 @@ export interface Trip {
   tipAmount: number;
   price: number;
   total: number;
+  note : string;
 }
 
 export interface CreateTripRequest {
@@ -14,6 +15,7 @@ export interface CreateTripRequest {
   tripDate: string;
   tipStatus: boolean;
   tipAmount: number;
+  note : string;
 }
 
 export interface UpdateTripRequest {
@@ -21,6 +23,7 @@ export interface UpdateTripRequest {
   tripDate: string;
   tipStatus: boolean;
   tipAmount: number;
+  note: string;
 }
 
 export interface TripPagedResponse {

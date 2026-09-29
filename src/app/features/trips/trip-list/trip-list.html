@@ -310,6 +310,12 @@
                   Total
 
                 </th>
+                <th
+                  class="text-muted text-uppercase small">
+
+                  Note
+
+                </th>
 
                 <th
                   class="text-muted text-uppercase small"
@@ -410,6 +416,19 @@
                   <td class="fw-semibold">
 
                     ৳{{ trip.total }}
+
+                  </td>
+
+                  <!-- Note -->
+                  <td class="fw-semibold">
+
+                    @if (trip.note){
+                      {{ trip.note }}
+                    }
+                    @else{
+                      N/A
+                    }
+                    
 
                   </td>
 

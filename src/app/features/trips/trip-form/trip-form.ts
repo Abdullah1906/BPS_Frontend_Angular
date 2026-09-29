@@ -41,7 +41,8 @@ export class TripForm implements OnInit {
 
     tipStatus: [false],
 
-    tipAmount: [0]
+    tipAmount: [0],
+    note :['', [ Validators.maxLength(150)]],
   });
   ngOnInit(): void {
     this.loadPlaces();
@@ -71,7 +72,8 @@ export class TripForm implements OnInit {
           placeIds: [trip.placeId],
           tripDate: trip.tripDate.substring(0, 10),
           tipStatus: trip.tipStatus,
-          tipAmount: trip.tipAmount
+          tipAmount: trip.tipAmount,
+          note : trip.note
         });
         this.loading = false;
       },
@@ -106,7 +108,8 @@ export class TripForm implements OnInit {
         tipStatus: formValue.tipStatus,
         tipAmount: formValue.tipStatus
           ? formValue.tipAmount
-          : 0
+          : 0,
+        note:formValue.note
       };
 
       this.tripService.update(
@@ -145,7 +148,8 @@ export class TripForm implements OnInit {
       tipStatus: formValue.tipStatus,
       tipAmount: formValue.tipStatus
         ? formValue.tipAmount
-        : 0
+        : 0,
+      note:formValue.note
     };
 
     this.tripService.create(createRequest).subscribe({
@@ -263,7 +267,8 @@ export class TripForm implements OnInit {
       placeIds: [],
       tripDate: '',
       tipStatus: false,
-      tipAmount: 0
+      tipAmount: 0,
+      note: ''
     });
 
     this.errorMessage = '';
