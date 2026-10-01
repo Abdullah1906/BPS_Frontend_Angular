@@ -10,6 +10,8 @@ import {
   takeUntil
 } from 'rxjs';
 
+type PaginationItem = number | '...';
+
 @Component({
   selector: 'app-trip-list',
   standalone: true,
@@ -120,7 +122,7 @@ export class TripList implements OnInit, OnDestroy {
       });
   }
 
-   onSearch(event: Event): void {
+  onSearch(event: Event): void {
 
     const input =
       event.target as HTMLInputElement;
@@ -177,6 +179,42 @@ export class TripList implements OnInit, OnDestroy {
     }
   }
 
+
+  getPaginationItems(): PaginationItem[] {
+
+    const total = this.totalPages();
+    const current = this.currentPage();
+
+    if (total <= 5) {
+      return Array.from(
+        { length: total },
+        (_, i) => i + 1
+      );
+    }
+
+    const pages: PaginationItem[] = [];
+
+    pages.push(1);
+
+    if (current > 4) {
+      pages.push('...');
+    }
+
+    const start = Math.max(2, current - 1);
+    const end = Math.min(total - 1, current + 1);
+
+    for (let page = start; page <= end; page++) {
+      pages.push(page);
+    }
+
+    if (current < total - 3) {
+      pages.push('...');
+    }
+
+    pages.push(total);
+
+    return pages;
+  }
 
   // ============================
   // Page Size

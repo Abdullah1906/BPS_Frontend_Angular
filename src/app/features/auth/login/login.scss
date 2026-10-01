@@ -424,3 +424,8 @@ REGISTER LINK
 
   text-decoration: underline;
 }
+
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+  display: none;
+}

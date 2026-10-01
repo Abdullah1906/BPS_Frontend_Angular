@@ -559,7 +559,7 @@
 
               <!-- Current Page -->
 
-              <li class="page-item active">
+              <!-- <li class="page-item active">
 
                 <button
                   class="page-link">
@@ -568,7 +568,38 @@
 
                 </button>
 
-              </li>
+              </li> -->
+
+              <!-- Page Numbers -->
+
+            @for (item of getPaginationItems(); track $index) {
+
+              @if (item === '...') {
+
+                <li class="page-item disabled">
+                  <span class="page-link">...</span>
+                </li>
+
+              } @else {
+
+                <li
+                  class="page-item"
+                  [class.active]="currentPage() === item">
+
+                  <button
+                    type="button"
+                    class="page-link"
+                    (click)="goToPage(item)">
+
+                    {{ item }}
+
+                  </button>
+
+                </li>
+
+              }
+
+            }
 
 
               <!-- Next -->
