@@ -161,19 +161,23 @@
           </div>
 
           <div class="mb-3">
-          <label for="note" class="form-label fw-semibold small">
-            Note
-          </label>
-          <input
-            id="note"
-            type="text"
-            class="form-control"
-            formControlName="note"
-            placeholder="Enter Note(Optional)"
-            maxlength="150"
-          />
-          
-        </div>
+            <label for="note" class="form-label fw-semibold small">
+              Note
+            </label>
+
+            <textarea
+              id="note"
+              class="form-control modern-textarea"
+              formControlName="note"
+              placeholder="Enter note (optional)"
+              rows="2"
+              maxlength="150"
+            ></textarea>
+
+            <div class="form-text text-end">
+              Optional · Max 150 characters
+            </div>
+          </div>
         }
 
         @if (errorMessage) {

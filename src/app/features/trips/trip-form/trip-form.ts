@@ -30,6 +30,15 @@ export class TripForm implements OnInit {
 
   places = signal<Place[]>([]);
 
+  private getTodayDate(): string {
+    const today = new Date();
+
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+  }
 
   tripForm = this.fb.nonNullable.group({
     placeIds: this.fb.nonNullable.control<number[]>([], [
@@ -37,7 +46,7 @@ export class TripForm implements OnInit {
       Validators.minLength(1)
     ]),
 
-    tripDate: ['', Validators.required],
+    tripDate: [this.getTodayDate(), Validators.required],
 
     tipStatus: [false],
 

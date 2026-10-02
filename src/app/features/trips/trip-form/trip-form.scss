@@ -44,3 +44,20 @@
   border-top: 1px solid #dee2e6;
 }
 
+.modern-textarea {
+  min-height: 65px;
+  resize: vertical;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+  transition: all 0.2s ease;
+}
+
+.modern-textarea:focus {
+  border-color: #86b7fe;
+  box-shadow: 0 0 0 0.15rem rgba(13, 110, 253, 0.12);
+}
+
+.modern-textarea::placeholder {
+  color: #adb5bd;
+  font-size: 14px;
+}
