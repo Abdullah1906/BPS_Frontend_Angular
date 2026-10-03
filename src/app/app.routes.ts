@@ -25,6 +25,8 @@ import { Passenger } from './features/booking/passenger/passenger';
 import { Payment } from './features/booking/payment/payment';
 import { Ticket } from './features/booking/ticket/ticket';
 import { RegisterComponent } from './features/auth/registration/registration';
+import { ResetPassword } from './features/auth/reset-password/reset-password';
+import { ForgotPassword } from './features/auth/forgot-password/forgot-password';
 
 
 export const routes: Routes = [
@@ -43,6 +45,16 @@ export const routes: Routes = [
     path: 'auth/register',
     component: RegisterComponent
 
+  },
+
+  {
+      path: 'auth/forgot-password',
+      component: ForgotPassword
+  },
+
+  {
+      path: 'auth/reset-password',
+      component: ResetPassword
   },
 
   {

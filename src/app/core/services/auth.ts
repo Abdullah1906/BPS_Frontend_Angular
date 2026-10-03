@@ -143,6 +143,26 @@ export class AuthService {
     );
   }
 
+  // FORGOT PASSWORD
+
+  forgotPassword(request: {email: string;}) {
+
+    return this.http.post(
+      `${this.apiUrl}/forgot-password`,
+      request
+    );
+  }
+
+  // RESET PASSWORD
+
+  resetPassword(request: {token: string;newPassword: string;}) {
+
+    return this.http.post(
+      `${this.apiUrl}/reset-password`,
+      request
+    );
+  }
+
 
   // GET ACCESS TOKEN
 
