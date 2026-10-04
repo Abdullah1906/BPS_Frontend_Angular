@@ -31,3 +31,25 @@ export const authGuard: CanActivateFn =
     ]);
 
   };
+
+
+export const roleGuard = (allowedRoles: string[]): CanActivateFn => {
+
+  return () => {
+
+    const authService = inject(AuthService);
+    const router = inject(Router);
+
+    const user = authService.getCurrentUser();
+
+    if (!user) {
+      return router.createUrlTree(['/login']);
+    }
+
+    if (allowedRoles.includes(user.role)) {
+      return true;
+    }
+
+    return router.createUrlTree(['/dashboard']);
+  };
+};

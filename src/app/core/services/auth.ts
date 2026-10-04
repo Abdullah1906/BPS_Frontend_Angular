@@ -199,6 +199,27 @@ export class AuthService {
   }
 
 
+  /// GET CURRENT USER for Role Check
+  getCurrentUser(): LoginResponse | null {
+
+    const user = localStorage.getItem('bps_current_user');
+
+    if (!user) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(user) as LoginResponse;
+    } catch {
+      return null;
+    }
+  }
+
+  getRole(): string | null {
+
+    return this.getCurrentUser()?.role ?? null;
+  }
+
   // CHECK LOGIN
 
   isLoggedIn(): boolean {

@@ -5,7 +5,7 @@ import { Dashboard } from './features/dashboard/dashboard/dashboard';
 import { PlaceList } from './features/places/place-list/place-list';
 import { PlaceForm } from './features/places/place-form/place-form';
 import { MainLayout } from './layout/main-layout/main-layout';
-import { authGuard } from './core/guards/auth-guard';
+import { authGuard, roleGuard } from './core/guards/auth-guard';
 import { TripList } from './features/trips/trip-list/trip-list';
 import { TripForm } from './features/trips/trip-form/trip-form';
 import { ReportView } from './features/reports/report-view/report-view';
@@ -29,7 +29,12 @@ import { ResetPassword } from './features/auth/reset-password/reset-password';
 import { ForgotPassword } from './features/auth/forgot-password/forgot-password';
 
 
+
 export const routes: Routes = [
+
+  // =====================================================
+  // PUBLIC ROUTES
+  // =====================================================
 
   {
     path: '',
@@ -41,127 +46,196 @@ export const routes: Routes = [
     path: 'login',
     component: Login
   },
+
   {
     path: 'auth/register',
     component: RegisterComponent
-
   },
 
   {
-      path: 'auth/forgot-password',
-      component: ForgotPassword
+    path: 'auth/forgot-password',
+    component: ForgotPassword
   },
 
   {
-      path: 'auth/reset-password',
-      component: ResetPassword
+    path: 'auth/reset-password',
+    component: ResetPassword
   },
+
+
+  // =====================================================
+  // AUTHENTICATED AREA
+  // =====================================================
 
   {
     path: '',
     component: MainLayout,
     canActivate: [authGuard],
+
     children: [
+
+      // =================================================
+      // COMMON
+      // =================================================
 
       {
         path: 'dashboard',
         component: Dashboard
       },
 
-      {
-        path: 'places',
-        component: PlaceList
-      },
+
+      // =================================================
+      // ADMIN ROUTES
+      // =================================================
 
       {
-        path: 'places/create',
-        component: PlaceForm
-      },
-      {
-        path: 'places/:id/edit',
-        component: PlaceForm
-      },
-      {
-        path: 'trips',
-        component: TripList
-      },
-      {
-        path: 'trips/create',
-        component: TripForm
-      },
-      {
-        path: 'trips/:id/edit',
-        component: TripForm
-      },
-      {
-        path: 'reports',
-        component: ReportView
-      },
-      {
-        path: 'admin/buses',
-        component: BusListComponent
-      },
-      {
-        path: 'admin/buses/create',
-        component: BusFormComponent
-      },
-      {
-        path: 'admin/buses/edit/:id',
-        component: BusFormComponent
-      },
-      {
-        path: 'admin/buses/:busId/seats',
-        component: SeatLayout
-      },
-      {
-        path: 'admin/routes',
-        component: RouteList
-      },
-      {
-        path: 'admin/routes/create',
-        component: RouteForm
-      },
-      {
-        path: 'admin/routes/:id/edit',
-        component: RouteForm
-      },
-      {
-        path: 'admin/trips/schedules',
-        component: TripScheduleList
+        path: 'admin',
+        canActivate: [
+          roleGuard(['Admin'])
+        ],
+
+        children: [
+
+          {
+            path: 'places',
+            component: PlaceList
+          },
+
+          {
+            path: 'places/create',
+            component: PlaceForm
+          },
+
+          {
+            path: 'places/:id/edit',
+            component: PlaceForm
+          },
+          {
+            path: 'trips',
+            component: TripList
+          },
+          {
+            path: 'trips/create',
+            component: TripForm
+          },
+          {
+            path: 'trips/:id/edit',
+            component: TripForm
+          },
+          {
+            path: 'reports',
+            component: ReportView
+          },
+
+          {
+            path: 'admin/buses',
+            component: BusListComponent
+          },
+          {
+            path: 'admin/buses/create',
+            component: BusFormComponent
+          },
+          {
+            path: 'admin/buses/edit/:id',
+            component: BusFormComponent
+          },
+          {
+            path: 'admin/buses/:busId/seats',
+            component: SeatLayout
+          },
+
+          {
+            path: 'admin/routes',
+            component: RouteList
+          },
+          {
+            path: 'admin/routes/create',
+            component: RouteForm
+          },
+          {
+            path: 'admin/routes/:id/edit',
+            component: RouteForm
+          },
+          {
+            path: 'admin/trips/schedules',
+            component: TripScheduleList
+          },
+
+          {
+            path: 'admin/trips/schedules/create',
+            component: TripScheduleForm
+          },
+
+          {
+            path: 'admin/trips/schedules/edit/:id',
+            component: TripScheduleForm
+          },
+         
+          
+
+
+        ]
       },
 
-      {
-        path: 'admin/trips/schedules/create',
-        component: TripScheduleForm
-      },
+
+      // =================================================
+      // ADMIN + CUSTOMER
+      // =================================================
 
       {
-        path: 'admin/trips/schedules/edit/:id',
-        component: TripScheduleForm
-      },
-       {
         path: 'search',
-        component: TripSearchComponent
+        component: TripSearchComponent,
+
+        canActivate: [
+          roleGuard([
+            'Admin',
+            'Customer'
+          ])
+        ]
       },
+
+
+
+      // =================================================
+      // CUSTOMER BOOKING
+      // =================================================
+
       {
-        path: 'booking/seat-map/:tripId',
-        component: SeatMap
-      },  
-      {
-        path: 'booking/passenger',
-        component: Passenger
+        path: 'booking',
+        canActivate: [
+          roleGuard([
+            'Customer'
+          ])
+        ],
+
+        children: [
+
+          {
+            path: 'booking/seat-map/:tripId',
+            component: SeatMap
+          },  
+          {
+            path: 'booking/passenger',
+            component: Passenger
+          },
+          {
+            path: 'booking/payment',
+            component: Payment
+          },
+          {
+            path: 'booking/ticket',
+            component: Ticket
+          }
+
+        ]
       },
-      {
-        path: 'booking/payment',
-        component: Payment
-      },
-      {
-        path: 'booking/ticket',
-        component: Ticket
-      }
+
+
+
 
     ]
   },
+
 
   {
     path: '**',
