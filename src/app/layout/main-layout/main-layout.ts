@@ -15,6 +15,14 @@ import {
 } from '../../core/services/auth';
 
 
+import{
+  PermissionService
+} from '../../core/services/permission';
+
+import {
+  Permissions
+} from '../../core/constants/permissions';
+
 @Component({
   selector: 'app-main-layout',
 
@@ -39,6 +47,9 @@ export class MainLayout {
 
   private readonly router =
     inject(Router);
+
+  public readonly permissionService = inject(PermissionService);
+  public readonly Permissions = Permissions;
 
   user = this.authService.getUser();
   logout(): void {

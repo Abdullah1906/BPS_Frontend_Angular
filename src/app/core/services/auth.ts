@@ -62,6 +62,19 @@ export class AuthService {
             JSON.stringify(response)
           );
 
+          localStorage.setItem(
+            'bps_current_user',
+            JSON.stringify({
+              userId: response.userId,
+              username: response.username,
+              fullName: response.fullName,
+              role: response.role,
+              email: response.email,
+              phoneNumber: response.phoneNumber,
+              permissions: response.permissions
+            })
+          );
+
         })
 
       );

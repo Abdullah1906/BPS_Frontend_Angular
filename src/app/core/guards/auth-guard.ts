@@ -7,6 +7,7 @@ import { inject } from '@angular/core';
 
 import { AuthService }
   from '../services/auth';
+import { PermissionService } from '../services/permission';
 
 
 export const authGuard: CanActivateFn =
@@ -52,4 +53,32 @@ export const roleGuard = (allowedRoles: string[]): CanActivateFn => {
 
     return router.createUrlTree(['/dashboard']);
   };
+};
+
+export const permissionGuard = (
+  permission: string
+): CanActivateFn => {
+
+  return () => {
+
+    const permissionService =
+      inject(PermissionService);
+
+    const router =
+      inject(Router);
+
+    if (
+      permissionService.has(permission)
+    ) {
+
+      return true;
+
+    }
+
+    return router.createUrlTree([
+      '/dashboard'
+    ]);
+
+  };
+
 };

@@ -12,83 +12,108 @@
       <div class="text-white-50 small">Bus POS System</div>
     </div>
 
-    <!-- Navigation -->
+<!-- Navigation -->
     <nav class="flex-grow-1 px-3 py-3 d-flex flex-column gap-1">
 
-      <a
-        routerLink="/dashboard"
-        routerLinkActive="active bg-primary text-white"
-        [routerLinkActiveOptions]="{ exact: true }"
-        class="nav-link text-white-50 d-flex align-items-center gap-2 px-3 py-2 rounded"
-      >
-        <span class="fs-6">▣</span>
-        <span>Dashboard</span>
-      </a>
+      <!-- Dashboard -->
+      @if (permissionService.has(Permissions.DashboardView)) {
+        <a
+          routerLink="/dashboard"
+          routerLinkActive="active bg-primary text-white"
+          [routerLinkActiveOptions]="{ exact: true }"
+          class="nav-link text-white-50 d-flex align-items-center gap-2 px-3 py-2 rounded"
+        >
+          <span class="fs-6">▣</span>
+          <span>Dashboard</span>
+        </a>
+      }
+
       <!-- Booking System Section -->
       <div class="text-uppercase text-white-50 fw-bold px-3 pt-3 pb-1 style-header">Booking</div>
-      <a
-        routerLink="/search"
-        routerLinkActive="active bg-primary text-white"
-        class="nav-link text-white-50 d-flex align-items-center gap-2 px-3 py-2 rounded"
-      >
-        <span class="fs-6">🔍</span>
-        <span>Search Trips</span>
-      </a>
+      
+      <!-- Search Trips -->
+      @if (permissionService.has(Permissions.TripSearch)) {
+        <a
+          routerLink="/search"
+          routerLinkActive="active bg-primary text-white"
+          class="nav-link text-white-50 d-flex align-items-center gap-2 px-3 py-2 rounded"
+        >
+          <span class="fs-6">🔍</span>
+          <span>Search Trips</span>
+        </a>
+      }
 
-    
+      <!-- Places -->
+      @if (permissionService.has(Permissions.PlaceView)) {
+        <a
+          routerLink="/places"
+          routerLinkActive="active bg-primary text-white"
+          class="nav-link text-white-50 d-flex align-items-center gap-2 px-3 py-2 rounded"
+        >
+          <span class="fs-6">◫</span>
+          <span>Places</span>
+        </a>
+      }
 
-      <a
-        routerLink="/places"
-        routerLinkActive="active bg-primary text-white"
-        class="nav-link text-white-50 d-flex align-items-center gap-2 px-3 py-2 rounded"
-      >
-        <span class="fs-6">◫</span>
-        <span>Places</span>
-      </a>
+      <!-- Trips -->
+      @if (permissionService.has(Permissions.TripView)) {
+        <a  
+          routerLink="/trips"
+          routerLinkActive="active bg-primary text-white"
+          class="nav-link text-white-50 d-flex align-items-center gap-2 px-3 py-2 rounded"
+        >
+          <span class="fs-6">⇄</span>
+          <span>Trips</span>
+        </a>
+      }
 
-    <a  
-        routerLink="/trips"
-        routerLinkActive="active bg-primary text-white"
-        class="nav-link text-white-50 d-flex align-items-center gap-2 px-3 py-2 rounded"
-    >
-        <span class="fs-6">⇄</span>
-        <span>Trips</span>
-    </a>
-    <a
-        routerLink="/admin/buses"
-        routerLinkActive="active bg-primary text-white"
-        class="nav-link text-white-50 d-flex align-items-center gap-2 px-3 py-2 rounded"
-      >
-        <span class="fs-6">🚌</span>
-        <span>Buses</span>
-      </a>
+      <!-- Buses -->
+      @if (permissionService.has(Permissions.BusView)) {
+        <a
+          routerLink="/admin/buses"
+          routerLinkActive="active bg-primary text-white"
+          class="nav-link text-white-50 d-flex align-items-center gap-2 px-3 py-2 rounded"
+        >
+          <span class="fs-6">🚌</span>
+          <span>Buses</span>
+        </a>
+      }
 
-      <a
-        routerLink="/admin/routes"
-        routerLinkActive="active bg-primary text-white"
-        class="nav-link text-white-50 d-flex align-items-center gap-2 px-3 py-2 rounded"
-      >
-        <span class="fs-6">🛣️</span>
-        <span>Routes</span>
-      </a>
+      <!-- Routes -->
+      @if (permissionService.has(Permissions.RouteView)) {
+        <a
+          routerLink="/admin/routes"
+          routerLinkActive="active bg-primary text-white"
+          class="nav-link text-white-50 d-flex align-items-center gap-2 px-3 py-2 rounded"
+        >
+          <span class="fs-6">🛣️</span>
+          <span>Routes</span>
+        </a>
+      }
 
-      <a
-        routerLink="/admin/trips/schedules"
-        routerLinkActive="active bg-primary text-white"
-        class="nav-link text-white-50 d-flex align-items-center gap-2 px-3 py-2 rounded"
-      >
-        <span class="fs-6">📅</span>
-        <span>Trip Schedules</span>
-      </a>
+      <!-- Trip Schedules -->
+      @if (permissionService.has(Permissions.TripScheduleView)) {
+        <a
+          routerLink="/admin/trips/schedules"
+          routerLinkActive="active bg-primary text-white"
+          class="nav-link text-white-50 d-flex align-items-center gap-2 px-3 py-2 rounded"
+        >
+          <span class="fs-6">📅</span>
+          <span>Trip Schedules</span>
+        </a>
+      }
 
-    <a
-        routerLink="/reports"
-        routerLinkActive="active bg-primary text-white"
-        class="nav-link text-white-50 d-flex align-items-center gap-2 px-3 py-2 rounded"
-    >
-        <span class="fs-6">▤</span>
-        <span>Reports</span>
-    </a>
+      <!-- Reports -->
+      @if (permissionService.has(Permissions.ReportView)) {
+        <a
+          routerLink="/reports"
+          routerLinkActive="active bg-primary text-white"
+          class="nav-link text-white-50 d-flex align-items-center gap-2 px-3 py-2 rounded"
+        >
+            <span class="fs-6">▤</span>
+            <span>Reports</span>
+        </a>
+      }
 
     </nav>
 

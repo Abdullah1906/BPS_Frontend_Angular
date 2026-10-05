@@ -12,6 +12,7 @@ export interface LoginResponse {
   role: string;
   email: string;
   phoneNumber: string;
+  permissions: string[];
 }
 
 export interface RefreshTokenRequest {
