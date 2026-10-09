@@ -50,7 +50,7 @@ export class TripForm implements OnInit {
 
     tipStatus: [false],
 
-    tipAmount: [0],
+    tipAmount: [1, [Validators.min(1), Validators.max(20)]],
     note :['', [ Validators.maxLength(150)]],
   });
   ngOnInit(): void {
@@ -269,7 +269,30 @@ export class TripForm implements OnInit {
   }
 
 
+preventNegativeSymbols(event: KeyboardEvent): void {
+  if (event.key === '-' || event.key === '+' || event.key === '.') {
+    event.preventDefault();
+  }
+}
 
+enforceTripBounds(event: Event): void {
+  const input = event.target as HTMLInputElement;
+  let value = parseInt(input.value, 10);
+
+
+  if (input.value === '') return;
+
+
+  if (value < 1 || isNaN(value)) {
+    this.tripForm.controls.tipAmount.setValue(1);
+    input.value = '1';
+  } 
+
+  else if (value > 20) {
+    this.tripForm.controls.tipAmount.setValue(20);
+    input.value = '20';
+  }
+}
 
   clear(): void {
     this.tripForm.reset({

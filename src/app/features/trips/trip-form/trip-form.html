@@ -155,8 +155,9 @@
           <div class="mb-3">
             <label for="tipAmount" class="form-label fw-semibold small">Tip Amount</label>
             <div class="input-group">
-              <span class="input-group-text">৳</span>
-              <input id="tipAmount" type="number" class="form-control" formControlName="tipAmount" />
+              <span class="input-group-text">🎫</span>
+              <input id="tipAmount" type="number" class="form-control" formControlName="tipAmount"  min="1" max="20" step="1"
+               (keydown)="preventNegativeSymbols($event)" (input)="enforceTripBounds($event)"  />
             </div>
           </div>
 
