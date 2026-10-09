@@ -9,6 +9,7 @@ import {
   distinctUntilChanged,
   takeUntil
 } from 'rxjs';
+import Swal from 'sweetalert2';
 
 type PaginationItem = number | '...';
 
@@ -246,33 +247,47 @@ export class TripList implements OnInit, OnDestroy {
   }
 
   delete(id: number): void {
-    const confirmed = confirm('Are you sure you want to delete this trip?');
+  Swal.fire({
+    title: 'Are you sure?',
+    text: 'You will not be able to recover this trip record!',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#dc3545', 
+    cancelButtonColor: '#6c757d',  
+    confirmButtonText: 'Yes, delete it!',
+    cancelButtonText: 'No, cancel'
+  }).then((result) => {
+    
 
-    if (!confirmed) {
-      return;
-    }
+    if (result.isConfirmed) {
+      this.tripService.delete(id).subscribe({
+        next: () => {
+          Swal.fire({
+            title: 'Deleted!',
+            text: 'The trip has been successfully deleted.',
+            icon: 'success',
+            timer: 1500,
+            showConfirmButton: false
+          });
 
-    this.tripService.delete(id).subscribe({
-      next: () => {
-
-          if (
-            this.trips().length === 1 &&
-            this.currentPage() > 1
-          ) {
-
-            this.currentPage.update(
-              page => page - 1
-            );
+          if (this.trips().length === 1 && this.currentPage() > 1) {
+            this.currentPage.update(page => page - 1);
           }
 
           this.loadTrips();
         },
-      error: (error) => {
-        console.error('Delete trip error:', error);
-        this.errorMessage = 'Unable to delete trip.';
-      }
-    });
-  }
+        error: (error) => {
+          console.error('Delete trip error:', error); 
+          Swal.fire({
+            title: 'Error!',
+            text: 'Unable to delete the trip. Please try again.',
+            icon: 'error'
+          });
+        }
+      });
+    }
+  });
+}
 
 
   get currentFrom(): number {
