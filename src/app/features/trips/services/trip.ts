@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient,HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environments';
-import { Trip, CreateTripRequest, UpdateTripRequest,TripPagedResponse } from '../models/trip.model';
+import { Trip, CreateTripRequest, UpdateTripRequest,TripPagedResponse,DeleteMultipleTripRequest, DeleteMultipleTripResponse } from '../models/trip.model';
 
 @Injectable({
   providedIn: 'root'
@@ -58,4 +58,13 @@ export class TripService {
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/delete/${id}`);
   }
+
+  deleteMultiple(ids: number[]): Observable<DeleteMultipleTripResponse> {
+  const body: DeleteMultipleTripRequest = { ids };
+
+  return this.http.post<DeleteMultipleTripResponse>(
+    `${this.apiUrl}/delete-multiple`,
+    body
+  );
+}
 }

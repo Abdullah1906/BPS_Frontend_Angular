@@ -38,3 +38,11 @@ export interface TripPagedResponse {
 
   totalPages: number;
 }
+
+export interface DeleteMultipleTripRequest {
+  ids: number[];
+}
+
+export interface DeleteMultipleTripResponse {
+  deletedCount: number;
+}

@@ -50,6 +50,19 @@ export class TripList implements OnInit, OnDestroy {
 
   totalPages = signal(0);
 
+  selectedIds = signal<ReadonlySet<number>>(new Set());
+
+ selectedCount = computed(() => this.selectedIds().size);
+
+  allSelected = computed(() =>
+    this.trips().length > 0 &&
+    this.trips().every(t => this.selectedIds().has(t.id))
+  );
+
+  someSelected = computed(() =>
+    this.selectedCount() > 0 && !this.allSelected()
+  );
+
   ngOnInit(): void {
     this.setupSearch();
     this.loadTrips();
@@ -73,13 +86,41 @@ export class TripList implements OnInit, OnDestroy {
       });
   }
 
+  /// for selection features
+  isSelected(id: number): boolean {
+    return this.selectedIds().has(id);
+  }
+
+  toggleSelection(id: number): void {
+    this.selectedIds.update(current => {
+      const next = new Set(current);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  }
+
+  toggleAll(event: Event): void {
+    const checked = (event.target as HTMLInputElement).checked;
+
+    this.selectedIds.set(
+      checked
+        ? new Set(this.trips().map(t => t.id))
+        : new Set()
+    );
+  }
+
+  clearSelection(): void {
+    this.selectedIds.set(new Set());
+  }
+
+  // ============================
 
   loadTrips(): void {
 
     this.loading = true;
 
     this.errorMessage = '';
-
+    this.clearSelection();
 
     this.tripService
       .getPaged(
@@ -247,47 +288,92 @@ export class TripList implements OnInit, OnDestroy {
   }
 
   delete(id: number): void {
-  Swal.fire({
-    title: 'Are you sure?',
-    text: 'You will not be able to recover this trip record!',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#dc3545', 
-    cancelButtonColor: '#6c757d',  
-    confirmButtonText: 'Yes, delete it!',
-    cancelButtonText: 'No, cancel'
-  }).then((result) => {
-    
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'You will not be able to recover this trip record!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc3545', 
+      cancelButtonColor: '#6c757d',  
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'No, cancel'
+    }).then((result) => {
+      
 
-    if (result.isConfirmed) {
-      this.tripService.delete(id).subscribe({
-        next: () => {
+      if (result.isConfirmed) {
+        this.tripService.delete(id).subscribe({
+          next: () => {
+            Swal.fire({
+              title: 'Deleted!',
+              text: 'The trip has been successfully deleted.',
+              icon: 'success',
+              timer: 1500,
+              showConfirmButton: false
+            });
+
+            if (this.trips().length === 1 && this.currentPage() > 1) {
+              this.currentPage.update(page => page - 1);
+            }
+
+            this.loadTrips();
+          },
+          error: (error) => {
+            console.error('Delete trip error:', error); 
+            Swal.fire({
+              title: 'Error!',
+              text: 'Unable to delete the trip. Please try again.',
+              icon: 'error'
+            });
+          }
+        });
+      }
+    });
+  }
+deleteSelected(): void {
+    const ids = [...this.selectedIds()];
+
+    if (ids.length === 0) return;
+
+    Swal.fire({
+      title: 'Are you sure?',
+      text: `${ids.length} trip record(s) will be deleted!`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc3545',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: `Yes, delete ${ids.length}`,
+      cancelButtonText: 'No, cancel'
+    }).then(result => {
+      if (!result.isConfirmed) return;
+
+      this.tripService.deleteMultiple(ids).subscribe({
+        next: ({ deletedCount }) => {
           Swal.fire({
             title: 'Deleted!',
-            text: 'The trip has been successfully deleted.',
+            text: `${deletedCount} trip(s) deleted successfully.`,
             icon: 'success',
             timer: 1500,
             showConfirmButton: false
           });
 
-          if (this.trips().length === 1 && this.currentPage() > 1) {
+          // Current page-er shob row delete hole age-r page-e jao
+          if (ids.length === this.trips().length && this.currentPage() > 1) {
             this.currentPage.update(page => page - 1);
           }
 
           this.loadTrips();
         },
         error: (error) => {
-          console.error('Delete trip error:', error); 
+          console.error('Bulk delete error:', error);
           Swal.fire({
             title: 'Error!',
-            text: 'Unable to delete the trip. Please try again.',
+            text: 'Unable to delete selected trips. Please try again.',
             icon: 'error'
           });
         }
       });
-    }
-  });
-}
+    });
+  }
 
 
   get currentFrom(): number {

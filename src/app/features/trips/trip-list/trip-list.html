@@ -156,6 +156,27 @@
 
     </div>
 
+    @if (selectedCount() > 0) {
+      <div class="d-flex align-items-center justify-content-between
+                  px-3 py-2 bg-danger bg-opacity-10 border-bottom">
+        <span class="small fw-semibold text-danger">
+          {{ selectedCount() }} selected
+        </span>
+
+        <div class="d-flex gap-2">
+          <button type="button"
+                  class="btn btn-sm btn-outline-secondary"
+                  (click)="clearSelection()">
+            Clear
+          </button>
+          <button type="button"
+                  class="btn btn-sm btn-danger"
+                  (click)="deleteSelected()">
+            Delete Selected
+          </button>
+        </div>
+      </div>
+    }
 
     <!-- ========================= -->
     <!-- Body -->
@@ -268,6 +289,16 @@
 
               <tr>
 
+                <th style="width:40px;">
+                  <input
+                    type="checkbox"
+                    class="form-check-input"
+                    [checked]="allSelected()"
+                    [indeterminate]="someSelected()"
+                    (change)="toggleAll($event)"
+                    aria-label="Select all trips" />
+                </th>
+
                 <th
                   class="text-muted text-uppercase small"
                   style="width:50px;">
@@ -338,7 +369,15 @@
                 let i = $index
               ) {
 
-                <tr>
+                <tr [class.table-active]="isSelected(trip.id)">
+                  <td>
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      [checked]="isSelected(trip.id)"
+                      (change)="toggleSelection(trip.id)"
+                      [attr.aria-label]="'Select trip ' + trip.id" />
+                  </td>
 
                   <!-- Serial -->
 
