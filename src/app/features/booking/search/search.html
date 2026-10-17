@@ -43,16 +43,26 @@
             }
           </div>
 
+
+          
           <!-- Date -->
           <div class="col-md-4">
-            <label for="tripDate" class="form-label fw-semibold small">Travel Date</label>
+            <label for="tripDate" class="form-label fw-semibold small">
+              Travel Date
+            </label>
+
             <input
               id="tripDate"
               type="date"
               class="form-control"
               formControlName="tripDate"
-              [class.is-invalid]="searchForm.controls.tripDate.touched && searchForm.controls.tripDate.invalid"
+              [min]="todayDate"
+              [class.is-invalid]="
+                searchForm.controls.tripDate.touched &&
+                searchForm.controls.tripDate.invalid
+              "
             />
+            
             @if (searchForm.controls.tripDate.touched && searchForm.controls.tripDate.invalid) {
               <div class="invalid-feedback">Travel date is required.</div>
             }
