@@ -78,14 +78,38 @@ export class TripSearchComponent {
         'From place and To place cannot be the same.';
       return;
     }
-    const formattedDate = this.datePipe.transform(tripDate, 'yyyy-MM-dd') || tripDate;
+
+
+    const now = new Date();
+
+    // Selected date + current time
+    const selectedDateTime = new Date(
+      `${tripDate}T00:00:00`
+    );
+
+
+     selectedDateTime.setHours(
+      now.getHours(),
+      now.getMinutes(),
+      now.getSeconds(),
+      now.getMilliseconds()
+    );
+
+    // Format: yyyy-MM-ddTHH:mm:ss
+    const formattedDateTime =
+      `${tripDate}T${String(now.getHours()).padStart(2, '0')}:` +
+      `${String(now.getMinutes()).padStart(2, '0')}:` +
+      `${String(now.getSeconds()).padStart(2, '0')}`;
+
+
+    //const formattedDate = this.datePipe.transform(tripDate, 'yyyy-MM-dd') || tripDate;
     this.loading = true;
 
     this.tripSearchService
       .searchTrips(
         fromPlace.trim(),
         toPlace.trim(),
-        formattedDate
+        formattedDateTime
       )
       .subscribe({
         next: (response) => {
@@ -109,8 +133,6 @@ export class TripSearchComponent {
   }
 
   selectTrip(trip: TripSearchResponse): void {
-    console.log('Selected Trip:', trip);
-    console.log('Selected Bus Name:', trip.busName);
 
     if (trip && trip.tripId) {
 
