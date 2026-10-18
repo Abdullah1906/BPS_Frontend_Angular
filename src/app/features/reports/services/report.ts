@@ -34,4 +34,33 @@ export class ReportService {
 
     return this.http.get<Report[]>(`${this.apiUrl}/get`, { params });
   }
+
+
+  exportPdf(filter: ReportFilter): Observable<Blob> {
+    let params = new HttpParams();
+
+    if (filter.fromDate) {
+      params = params.set('FromDate', filter.fromDate);
+    }
+
+    if (filter.toDate) {
+      params = params.set('ToDate', filter.toDate);
+    }
+
+    if (filter.placeId) {
+      params = params.set('PlaceId', filter.placeId.toString());
+    }
+
+    if (filter.period) {
+      params = params.set('Period', filter.period);
+    }
+
+    return this.http.get(
+      `${this.apiUrl}/export-pdf`,
+      {
+        params,
+        responseType: 'blob'
+      }
+    );
+}
 }

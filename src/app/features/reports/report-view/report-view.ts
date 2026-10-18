@@ -223,171 +223,212 @@ export class ReportView {
     return result;
   }
 
-  async downloadPdf(): Promise<void> {
+  // async downloadPdf(): Promise<void> {
 
-    if (!this.banglaReport) {
+  //   if (!this.banglaReport) {
+  //     return;
+  //   }
+
+  //   try {
+
+  //     this.errorMessage = '';
+
+  //     const element =
+  //       this.banglaReport.nativeElement;
+
+
+  //     // Temporarily show Bangla report
+  //     element.style.display = 'block';
+
+  //     element.style.position = 'absolute';
+  //     element.style.left = '-99999px';
+  //     element.style.top = '0';
+
+
+  //     // Wait for Bengali font
+  //     await document.fonts.ready;
+
+
+  //     const canvas = await html2canvas(element, {
+
+  //       scale: 2,
+
+  //       useCORS: true,
+
+  //       backgroundColor: '#ffffff',
+
+  //       logging: false,
+
+  //       windowWidth: element.scrollWidth
+
+  //     });
+
+
+  //     // Restore screen state
+  //     element.style.display = 'none';
+
+  //     element.style.position = '';
+  //     element.style.left = '';
+  //     element.style.top = '';
+
+
+  //     const imageData =
+  //       canvas.toDataURL('image/png');
+
+
+  //     const pdf = new jsPDF({
+
+  //       orientation: 'portrait',
+
+  //       unit: 'mm',
+
+  //       format: 'a4'
+
+  //     });
+
+
+  //     const pageWidth = 210;
+
+  //     const pageHeight = 297;
+
+  //     const margin = 10;
+
+  //     const pdfWidth =
+  //       pageWidth - (margin * 2);
+
+  //     const pdfHeight =
+  //       (canvas.height * pdfWidth) /
+  //       canvas.width;
+
+  //     const usableHeight =
+  //       pageHeight - (margin * 2);
+
+
+  //     let heightLeft = pdfHeight;
+
+  //     let position = margin;
+
+
+  //     pdf.addImage(
+
+  //       imageData,
+
+  //       'PNG',
+
+  //       margin,
+
+  //       position,
+
+  //       pdfWidth,
+
+  //       pdfHeight
+
+  //     );
+
+
+  //     heightLeft -= usableHeight;
+
+
+  //     while (heightLeft > 0) {
+
+  //       position =
+  //         margin -
+  //         (pdfHeight - heightLeft);
+
+  //       pdf.addPage();
+
+  //       pdf.addImage(
+
+  //         imageData,
+
+  //         'PNG',
+
+  //         margin,
+
+  //         position,
+
+  //         pdfWidth,
+
+  //         pdfHeight
+
+  //       );
+
+  //       heightLeft -= usableHeight;
+
+  //     }
+
+
+  //     pdf.save(
+  //       `trip-report-${Date.now()}.pdf`
+  //     );
+
+  //   }
+  //   catch (error) {
+
+  //     console.error(
+  //       'PDF generation error:',
+  //       error
+  //     );
+
+  //     // Restore state if error occurs
+  //     const element =
+  //       this.banglaReport?.nativeElement;
+
+  //     if (element) {
+
+  //       element.style.display = 'none';
+
+  //       element.style.position = '';
+
+  //       element.style.left = '';
+
+  //       element.style.top = '';
+  //     }
+
+  //     this.errorMessage =
+  //       'PDF তৈরি করা সম্ভব হয়নি.';
+  //   }
+
+  // }
+
+
+  downloadPdf(): void {
+    if (this.loading || this.reports().length === 0) {
       return;
     }
 
-    try {
+    const formValue = this.filterForm.getRawValue();
 
-      this.errorMessage = '';
+    const filter = {
+      fromDate: formValue.fromDate || undefined,
+      toDate: formValue.toDate || undefined,
+      placeId: formValue.placeId || undefined,
+      period: formValue.period || undefined
+    };
 
-      const element =
-        this.banglaReport.nativeElement;
+    this.loading = true;
+    this.errorMessage = '';
 
+    this.reportService.exportPdf(filter).subscribe({
+      next: (blob) => {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
 
-      // Temporarily show Bangla report
-      element.style.display = 'block';
+        link.href = url;
+        link.download = `trip-report-${Date.now()}.pdf`;
 
-      element.style.position = 'absolute';
-      element.style.left = '-99999px';
-      element.style.top = '0';
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
 
-
-      // Wait for Bengali font
-      await document.fonts.ready;
-
-
-      const canvas = await html2canvas(element, {
-
-        scale: 2,
-
-        useCORS: true,
-
-        backgroundColor: '#ffffff',
-
-        logging: false,
-
-        windowWidth: element.scrollWidth
-
-      });
-
-
-      // Restore screen state
-      element.style.display = 'none';
-
-      element.style.position = '';
-      element.style.left = '';
-      element.style.top = '';
-
-
-      const imageData =
-        canvas.toDataURL('image/png');
-
-
-      const pdf = new jsPDF({
-
-        orientation: 'portrait',
-
-        unit: 'mm',
-
-        format: 'a4'
-
-      });
-
-
-      const pageWidth = 210;
-
-      const pageHeight = 297;
-
-      const margin = 10;
-
-      const pdfWidth =
-        pageWidth - (margin * 2);
-
-      const pdfHeight =
-        (canvas.height * pdfWidth) /
-        canvas.width;
-
-      const usableHeight =
-        pageHeight - (margin * 2);
-
-
-      let heightLeft = pdfHeight;
-
-      let position = margin;
-
-
-      pdf.addImage(
-
-        imageData,
-
-        'PNG',
-
-        margin,
-
-        position,
-
-        pdfWidth,
-
-        pdfHeight
-
-      );
-
-
-      heightLeft -= usableHeight;
-
-
-      while (heightLeft > 0) {
-
-        position =
-          margin -
-          (pdfHeight - heightLeft);
-
-        pdf.addPage();
-
-        pdf.addImage(
-
-          imageData,
-
-          'PNG',
-
-          margin,
-
-          position,
-
-          pdfWidth,
-
-          pdfHeight
-
-        );
-
-        heightLeft -= usableHeight;
-
+        URL.revokeObjectURL(url);
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('PDF export failed:', error);
+        this.errorMessage = 'PDF download failed.';
+        this.loading = false;
       }
-
-
-      pdf.save(
-        `trip-report-${Date.now()}.pdf`
-      );
-
-    }
-    catch (error) {
-
-      console.error(
-        'PDF generation error:',
-        error
-      );
-
-      // Restore state if error occurs
-      const element =
-        this.banglaReport?.nativeElement;
-
-      if (element) {
-
-        element.style.display = 'none';
-
-        element.style.position = '';
-
-        element.style.left = '';
-
-        element.style.top = '';
-      }
-
-      this.errorMessage =
-        'PDF তৈরি করা সম্ভব হয়নি.';
-    }
-
+    });
   }
 }
