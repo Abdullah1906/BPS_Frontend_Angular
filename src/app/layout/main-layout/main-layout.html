@@ -31,6 +31,30 @@
       <!-- Booking System Section -->
       <div class="text-uppercase text-white-50 fw-bold px-3 pt-3 pb-1 style-header">Booking</div>
       
+       <!-- staff -->
+        @if (permissionService.has(Permissions.StaffView)) {
+          <a
+            routerLink="/admin/staff"
+            routerLinkActive="active bg-primary text-white"
+            class="nav-link text-white-50 d-flex align-items-center gap-2 px-3 py-2 rounded"
+          >
+            <span class="fs-6">👥</span>
+            <span>Staff Management</span>
+          </a>
+        }
+
+        <!-- Payroll Management -->
+        @if (permissionService.has(Permissions.PayrollView)) {
+          <a
+            routerLink="/admin/payroll"
+            routerLinkActive="active bg-primary text-white"
+            class="nav-link text-white-50 d-flex align-items-center gap-2 px-3 py-2 rounded"
+          >
+            <span class="fs-6">💰</span>
+            <span>Payroll Management</span>
+          </a>
+        }
+
       <!-- Search Trips -->
       @if (permissionService.has(Permissions.TripSearch)) {
         <a

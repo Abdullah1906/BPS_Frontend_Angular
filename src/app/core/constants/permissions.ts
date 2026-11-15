@@ -43,6 +43,23 @@ export const Permissions = {
 
   BookingCreate: 'booking.create',
   BookingView: 'booking.view',
-  BookingCancel: 'booking.cancel'
+  BookingCancel: 'booking.cancel',
+
+  // Staff Management
+  
+  StaffView: 'staff.view',
+  StaffCreate: 'staff.create',
+  StaffEdit: 'staff.edit',
+  StaffDelete: 'staff.delete',
+  StaffStatusUpdate: 'staff.status.update',
+
+  // Payroll Management
+  PayrollView: 'payroll.view',
+  PayrollGenerate: 'payroll.generate',
+  PayrollAdjustment: 'payroll.adjustment',
+  PayrollPayment: 'payroll.payment',
+  PayrollReportView: 'payroll.report.view',
+  PayrollReportExport: 'payroll.report.export',
+
 
 } as const;

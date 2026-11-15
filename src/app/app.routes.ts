@@ -28,6 +28,10 @@ import { RegisterComponent } from './features/auth/registration/registration';
 import { ResetPassword } from './features/auth/reset-password/reset-password';
 import { ForgotPassword } from './features/auth/forgot-password/forgot-password';
 import { Permissions } from './core/constants/permissions';
+import { StaffList } from './features/staff/staff-list/staff-list';
+import { StaffForm } from './features/staff/staff-form/staff-form';
+import { PayrollList } from './features/payroll/payroll-list/payroll-list';
+
 
 
 export const routes: Routes = [
@@ -324,6 +328,38 @@ export const routes: Routes = [
               )
             ]
           },
+          // =================================================
+          // STAFF (DIRECT COMPONENT)
+          // =================================================
+          {
+            path: 'staff',
+            component: StaffList,
+            canActivate: [
+              permissionGuard(Permissions.StaffView)
+            ]
+          },
+          {
+            path: 'staff/create',
+            component: StaffForm,
+            canActivate: [
+              permissionGuard(Permissions.StaffCreate)
+            ]
+          },
+          {
+            path: 'staff/:id/edit',
+            component: StaffForm,
+            canActivate: [
+              permissionGuard(Permissions.StaffEdit)
+            ]
+          },
+          {
+            path: 'payroll',
+            component: PayrollList,
+            canActivate: [
+              permissionGuard(Permissions.PayrollView)
+            ]
+          },
+          
 
 
         ]
