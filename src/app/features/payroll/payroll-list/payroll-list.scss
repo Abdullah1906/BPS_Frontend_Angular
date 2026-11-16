@@ -1,0 +1,78 @@
+
+:host {
+  display: block;
+}
+
+.card {
+  border-radius: 12px;
+}
+
+.card-header {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.table {
+  th {
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    padding: 14px;
+  }
+
+  td {
+    font-size: 13px;
+    padding: 14px;
+    white-space: nowrap;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: 0;
+  }
+}
+
+.form-control,
+.form-select {
+  min-height: 40px;
+  font-size: 14px;
+
+  &:focus {
+    border-color: #86b7fe;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.12);
+  }
+}
+
+.btn {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.badge {
+  font-weight: 600;
+}
+
+.modal {
+  background: transparent;
+}
+
+.modal-content {
+  border-radius: 12px;
+}
+
+.modal-header,
+.modal-footer {
+  padding: 16px 20px;
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+@media (max-width: 768px) {
+  .container-fluid {
+    padding: 15px !important;
+  }
+
+  .modal-dialog {
+    margin: 10px;
+  }
+}
