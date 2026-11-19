@@ -1,0 +1,331 @@
+
+<div class="staff-page">
+
+  <!-- Header -->
+  <div class="page-header">
+
+    <div>
+      <h2>Staff Management</h2>
+      <p>Manage drivers and other staff members.</p>
+    </div>
+
+    <button
+      type="button"
+      class="btn btn-primary"
+      (click)="createStaff()">
+
+      + Add New Staff
+
+    </button>
+
+  </div>
+
+
+  <!-- Search and Filters -->
+  <div class="filter-card">
+
+    <div class="filter-grid">
+
+      <div class="form-group search-group">
+
+        <label>Search Staff</label>
+
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Name, phone or NID..."
+          [(ngModel)]="search"
+          (keyup.enter)="onSearch()">
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label>Staff Role</label>
+
+        <select
+          class="form-control"
+          [(ngModel)]="selectedRole"
+          (change)="onFilterChange()">
+
+          <option value="">All Roles</option>
+
+          @for (role of roles; track role) {
+            <option [value]="role">
+              {{ role }}
+            </option>
+          }
+
+        </select>
+
+      </div>
+
+
+      <div class="form-group">
+
+        <label>Status</label>
+
+        <select
+          class="form-control"
+          [(ngModel)]="selectedStatus"
+          (change)="onFilterChange()">
+
+          <option value="">All Status</option>
+          <option value="Active">Active</option>
+          <option value="Inactive">Inactive</option>
+
+        </select>
+
+      </div>
+
+
+      <div class="filter-actions">
+
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="onSearch()">
+
+          Search
+
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-outline"
+          (click)="clearFilters()">
+
+          Clear
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- Error -->
+  @if (errorMessage) {
+
+    <div class="alert-error">
+      {{ errorMessage }}
+    </div>
+
+  }
+
+
+  <!-- Staff Table -->
+  <div class="table-card">
+
+    <div class="table-header">
+
+      <h3>Staff List</h3>
+
+      <span class="total-count">
+        Total Staff: {{ totalRecords }}
+      </span>
+
+    </div>
+
+
+    @if (loading) {
+
+      <div class="loading">
+        Loading staff information...
+      </div>
+
+    } @else {
+
+      <div class="table-responsive">
+
+        <table>
+
+          <thead>
+
+            <tr>
+              <th>#</th>
+              <th>Name</th>
+              <th>Phone</th>
+              <th>NID</th>
+              <th>Role</th>
+              <th>Joining Date</th>
+              <th>Base Salary</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+
+          </thead>
+
+
+          <tbody>
+
+            @for (staff of staffList; track staff.staffId; let i = $index) {
+
+              <tr>
+
+                <td>
+                  {{ (page - 1) * pageSize + i + 1 }}
+                </td>
+
+                <td class="staff-name">
+                  {{ staff.fullName }}
+                </td>
+
+                <td>
+                  {{ staff.phoneNumber }}
+                </td>
+
+                <td>
+                  {{ staff.nidNumber }}
+                </td>
+
+                <td>
+                  <span class="role-badge">
+                    {{ staff.roleType }}
+                  </span>
+                </td>
+
+                <td>
+                  {{ staff.joiningDate | date:'dd MMM yyyy' }}
+                </td>
+
+                <td class="salary">
+                  ৳ {{ staff.baseSalary | number:'1.2-2' }}
+                </td>
+
+                <td>
+
+                  <span
+                    class="status-badge"
+                    [class.active]="staff.status === 'Active'"
+                    [class.inactive]="staff.status === 'Inactive'">
+
+                    {{ staff.status }}
+
+                  </span>
+
+                </td>
+
+                <td>
+
+                  <div class="action-buttons">
+
+                    <button
+                        type="button"
+                        class="btn-action edit"
+                        (click)="editStaff(staff.staffId)">
+                        Edit
+                    </button>
+
+                    @if (staff.status === 'Active') {
+
+                        <button
+                        type="button"
+                        class="btn-action delete"
+                        (click)="deactivateStaff(staff)">
+                        Delete
+                        </button>
+
+                    } @else {
+
+                        <button
+                        type="button"
+                        class="btn-action status"
+                        (click)="updateStatus(staff)">
+                        Activate
+                        </button>
+
+                    }
+
+                    </div>
+
+                </td>
+
+              </tr>
+
+            } @empty {
+
+              <tr>
+
+                <td colspan="9" class="empty-state">
+                  No staff records found.
+                </td>
+
+              </tr>
+
+            }
+
+          </tbody>
+
+        </table>
+
+      </div>
+
+    }
+
+
+    <!-- Pagination -->
+    @if (!loading && totalRecords > 0) {
+
+      <div class="pagination-container">
+
+        <div class="pagination-info">
+
+          Showing {{ startingRecord }} -
+          {{ endingRecord }} of {{ totalRecords }}
+
+        </div>
+
+
+        <div class="pagination-controls">
+
+          <select
+            class="page-size"
+            [(ngModel)]="pageSize"
+            (change)="changePageSize()">
+
+            <option [ngValue]="10">10</option>
+            <option [ngValue]="20">20</option>
+            <option [ngValue]="50">50</option>
+
+          </select>
+
+
+          <button
+            type="button"
+            class="page-btn"
+            [disabled]="page <= 1"
+            (click)="changePage(page - 1)">
+
+            Previous
+
+          </button>
+
+
+          <span class="page-number">
+            {{ page }} / {{ totalPages }}
+          </span>
+
+
+          <button
+            type="button"
+            class="page-btn"
+            [disabled]="page >= totalPages"
+            (click)="changePage(page + 1)">
+
+            Next
+
+          </button>
+
+        </div>
+
+      </div>
+
+    }
+
+  </div>
+
+</div>
