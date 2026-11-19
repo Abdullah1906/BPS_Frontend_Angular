@@ -1,0 +1,464 @@
+
+<div class="staff-form-page">
+
+  <!-- Header -->
+  <div class="page-header">
+
+    <div>
+      <h2>
+        {{ isEditMode ? 'Edit Staff' : 'Create New Staff' }}
+      </h2>
+
+      <p>
+        {{ isEditMode
+          ? 'Update staff member information.'
+          : 'Enter the information to register a new staff member.'
+        }}
+      </p>
+    </div>
+
+    <a
+      routerLink="/admin/staff"
+      class="btn btn-outline">
+
+      Back to Staff List
+
+    </a>
+
+  </div>
+
+
+  @if (errorMessage) {
+
+    <div class="alert-error">
+      {{ errorMessage }}
+    </div>
+
+  }
+
+
+  @if (loading) {
+
+    <div class="loading">
+      Loading staff information...
+    </div>
+
+  } @else {
+
+    <form
+      [formGroup]="staffForm"
+      (ngSubmit)="submit()"
+      class="staff-form">
+
+
+      <!-- Personal Information -->
+      <section class="form-section">
+
+        <div class="section-header">
+          <h3>Personal Information</h3>
+          <p>Basic staff member details.</p>
+        </div>
+
+
+        <div class="form-grid">
+
+          <div class="form-group">
+
+            <label>Full Name *</label>
+
+            <input
+              type="text"
+              class="form-control"
+              formControlName="fullName"
+              placeholder="Enter full name">
+
+            @if (
+              staffForm.controls.fullName.touched &&
+              staffForm.controls.fullName.hasError('required')
+            ) {
+              <small class="error-text">
+                Full name is required.
+              </small>
+            }
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label>Phone Number *</label>
+
+            <input
+              type="text"
+              class="form-control"
+              formControlName="phoneNumber"
+              placeholder="01XXXXXXXXX">
+
+            @if (
+              staffForm.controls.phoneNumber.touched &&
+              staffForm.controls.phoneNumber.hasError('required')
+            ) {
+              <small class="error-text">
+                Phone number is required.
+              </small>
+            }
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label>Alternative Contact</label>
+
+            <input
+              type="text"
+              class="form-control"
+              formControlName="alternativeContact"
+              placeholder="Alternative phone number">
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label>NID Number *</label>
+
+            <input
+              type="text"
+              class="form-control"
+              formControlName="nidNumber"
+              placeholder="Enter NID number">
+
+            @if (
+              staffForm.controls.nidNumber.touched &&
+              staffForm.controls.nidNumber.hasError('required')
+            ) {
+              <small class="error-text">
+                NID number is required.
+              </small>
+            }
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label>Passport / Birth Certificate</label>
+
+            <input
+              type="text"
+              class="form-control"
+              formControlName="passportOrBirthCertificate"
+              placeholder="Enter passport or birth certificate number">
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label>Joining Date *</label>
+
+            <input
+              type="date"
+              class="form-control"
+              formControlName="joiningDate">
+
+            @if (
+              staffForm.controls.joiningDate.touched &&
+              staffForm.controls.joiningDate.hasError('required')
+            ) {
+              <small class="error-text">
+                Joining date is required.
+              </small>
+            }
+
+          </div>
+
+
+          <div class="form-group full-width">
+
+            <label>Present Address</label>
+
+            <textarea
+              class="form-control"
+              rows="3"
+              formControlName="presentAddress"
+              placeholder="Enter present address">
+            </textarea>
+
+          </div>
+
+
+          <div class="form-group full-width">
+
+            <label>Permanent Address</label>
+
+            <textarea
+              class="form-control"
+              rows="3"
+              formControlName="permanentAddress"
+              placeholder="Enter permanent address">
+            </textarea>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- Employment Information -->
+      <section class="form-section">
+
+        <div class="section-header">
+          <h3>Employment Information</h3>
+          <p>Staff role and salary details.</p>
+        </div>
+
+
+        <div class="form-grid">
+
+          <div class="form-group">
+
+            <label>Staff Role *</label>
+
+            <select
+              class="form-control"
+              formControlName="roleType">
+
+              @for (role of roles; track role) {
+
+                <option [value]="role">
+                  {{ role }}
+                </option>
+
+              }
+
+            </select>
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label>Base Salary (BDT) *</label>
+
+            <input
+              type="number"
+              min="0"
+              step="0.01"
+              class="form-control"
+              formControlName="baseSalary"
+              placeholder="Enter monthly salary">
+
+            @if (
+              staffForm.controls.baseSalary.touched &&
+              staffForm.controls.baseSalary.invalid
+            ) {
+              <small class="error-text">
+                Enter a valid salary greater than or equal to zero.
+              </small>
+            }
+
+          </div>
+
+
+          @if (isDriver) {
+
+            <div class="form-group">
+
+              <label>Driving License Number *</label>
+
+              <input
+                type="text"
+                class="form-control"
+                formControlName="drivingLicenseNumber"
+                placeholder="Enter driving license number">
+
+              @if (
+                staffForm.controls.drivingLicenseNumber.touched &&
+                staffForm.controls.drivingLicenseNumber.invalid
+              ) {
+                <small class="error-text">
+                  Driving license number is required.
+                </small>
+              }
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label>License Expiry Date *</label>
+
+              <input
+                type="date"
+                class="form-control"
+                formControlName="licenseExpiryDate">
+
+              @if (
+                staffForm.controls.licenseExpiryDate.touched &&
+                staffForm.controls.licenseExpiryDate.invalid
+              ) {
+                <small class="error-text">
+                  License expiry date is required.
+                </small>
+              }
+
+            </div>
+
+
+            <div class="form-group">
+
+              <label>License Type *</label>
+
+              <select
+                class="form-control"
+                formControlName="licenseType">
+
+                <option value="">Select License Type</option>
+
+                @for (type of licenseTypes; track type) {
+
+                  <option [value]="type">
+                    {{ type }}
+                  </option>
+
+                }
+
+              </select>
+
+              @if (
+                staffForm.controls.licenseType.touched &&
+                staffForm.controls.licenseType.invalid
+              ) {
+                <small class="error-text">
+                  License type is required.
+                </small>
+              }
+
+            </div>
+
+          }
+
+        </div>
+
+      </section>
+
+
+      <!-- Payment Information -->
+      <section class="form-section">
+
+        <div class="section-header">
+          <h3>Bank & Mobile Banking Information</h3>
+          <p>Optional salary payment account details.</p>
+        </div>
+
+
+        <div class="form-grid">
+
+          <div class="form-group">
+
+            <label>Bank Name</label>
+
+            <input
+              type="text"
+              class="form-control"
+              formControlName="bankName"
+              placeholder="Enter bank name">
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label>Bank Account Number</label>
+
+            <input
+              type="text"
+              class="form-control"
+              formControlName="bankAccountNumber"
+              placeholder="Enter bank account number">
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label>Mobile Banking Provider</label>
+
+            <select
+              class="form-control"
+              formControlName="mobileBankingProvider">
+
+              <option value="">Select Provider</option>
+
+              @for (
+                provider of mobileBankingProviders;
+                track provider
+              ) {
+
+                <option [value]="provider">
+                  {{ provider }}
+                </option>
+
+              }
+
+            </select>
+
+          </div>
+
+
+          <div class="form-group">
+
+            <label>Mobile Banking Number</label>
+
+            <input
+              type="text"
+              class="form-control"
+              formControlName="mobileBankingNumber"
+              placeholder="Enter mobile banking number">
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- Actions -->
+      <div class="form-actions">
+
+        <a
+          routerLink="/admin/staff"
+          class="btn btn-outline">
+
+          Cancel
+
+        </a>
+
+
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="submitting">
+
+          @if (submitting) {
+
+            Saving...
+
+          } @else {
+
+            {{ isEditMode ? 'Update Staff' : 'Save Staff' }}
+
+          }
+
+        </button>
+
+      </div>
+
+    </form>
+
+  }
+
+</div>
