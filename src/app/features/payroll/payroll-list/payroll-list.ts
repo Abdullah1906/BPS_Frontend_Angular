@@ -635,4 +635,38 @@ export class PayrollList implements OnInit {
     this.loadPayroll();
   }
 
+  validateAmount(
+    field: 'bonus' | 'deduction',
+    event: Event
+  ): void {
+
+    const input = event.target as HTMLInputElement;
+
+    let value = input.value.replace(/[^0-9.]/g, '');
+
+    // Only one decimal point
+    const parts = value.split('.');
+
+    if (parts.length > 2) {
+      value = parts[0] + '.' + parts.slice(1).join('');
+    }
+
+    // Maximum 2 decimal places
+    const [integer, decimal] = value.split('.');
+
+    if (decimal !== undefined) {
+      value = integer + '.' + decimal.slice(0, 2);
+    }
+
+    input.value = value;
+
+    const amount = value === '' ? 0 : Number(value);
+
+    if (field === 'bonus') {
+      this.bonusAmount = amount;
+    } else {
+      this.deductionAmount = amount;
+    }
+  }
+
 }
